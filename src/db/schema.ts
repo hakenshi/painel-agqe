@@ -4,13 +4,12 @@ import 'dotenv/config';
 import { relations } from 'drizzle-orm';
 import { drizzle } from "drizzle-orm/node-postgres";
 import { date, integer, pgEnum, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { Pool } from 'pg';
 
-export const db = drizzle({
-    connection: {
-        connectionString: process.env.DATABASE_URL!,
-        ssl: true
-    }
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL!,
 });
+export const db = drizzle({ client: pool });
 
 export const usersSchema = pgTable('users', {
     id: serial('id').primaryKey().notNull(),

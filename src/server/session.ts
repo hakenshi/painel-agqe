@@ -1,14 +1,13 @@
 'server-only'
 
-import { usersSchema } from './../db/schema';
 import { cookies } from "next/headers"
 import { getIronSession } from "iron-session"
 
-const password = `${process.env.NEXT_JWT_SECRET}`
+const password = `${process.env.JWT_SECRET}`
 
 export async function getSession() {
     const cookie = await cookies()
-    return getIronSession<{ token: string, user: string }>(cookie, {
+    return getIronSession<{ token: string }>(cookie, {
         password,
         cookieName: "token",
         ttl: 0,
@@ -20,10 +19,9 @@ export async function getSession() {
     })
 }
 
-export async function saveSession({ token, user }: { token: string, user: typeof usersSchema.$inferSelect }) {
+export async function saveSession(token: string) {
     const session = await getSession()
     session.token = token
-    session.user = JSON.stringify(user)
     await session.save()
 }
 
