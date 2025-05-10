@@ -7,7 +7,7 @@ export default function HomeLayout({ children }: PropsWithChildren) {
     <div className="grid grid-cols-[200px_1fr] grid-rows-[auto_1fr] h-screen">
       <Header />
       <Sidebar />
-      <main className="col-start-2 row-start-2 container mx-auto">
+      <main className="col-start-2 row-start-2 container p-5">
         {children}
       </main>
     </div>

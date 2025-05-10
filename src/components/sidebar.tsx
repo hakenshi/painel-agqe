@@ -6,7 +6,7 @@ import { buttonVariants } from './ui/button'
 export default function Sidebar() {
     return (
         <aside className='border-r h-full border-zinc-200 row-span-1 col-start-1 row-start-2'>
-            <nav className='p-5 h-full w-full'>
+            <nav className='px-5 h-full w-full'>
                 <ul className='text-primary pt-10 space-y-3 w-full gap-7'>
                     <li className="w-full">
                         <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-start gap-3"} href={"/home"}>
