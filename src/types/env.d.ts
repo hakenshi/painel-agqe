@@ -8,5 +8,6 @@ declare namespace NodeJS {
         CLOUDFLARE_R2_BUCKET: string
         CLOUDFLARE_R2_ACCOUNT_ID: string
         CLOUDFLARE_R2_ENDPOINT: string
+        NEXT_PUBLIC_CLOUDFLARE_R2_ENDPOINT: string
     }
 }

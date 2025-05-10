@@ -12,11 +12,11 @@ export const login = async (cpf: string, password: string) => {
         throw new Error("Usuário não encontrado");
     }
     const valid = await bcrypt.compare(password, user[0].password);
-    
+
     if (!valid) {
         throw new Error("Senha inválida");
     }
-    const token = jwt.sign(JSON.stringify(user), `${process.env.JWT_TOKEN}`)
+    const token = jwt.sign(user[0], `${process.env.JWT_TOKEN}`)
 
     await saveSession(token)
 
@@ -25,4 +25,15 @@ export const login = async (cpf: string, password: string) => {
     if (session.token) {
         redirect("/home")
     }
+}
+
+export async function getAuthUser(): Promise<typeof usersSchema.$inferSelect> {
+    const { token } = await getSession()
+    const decodedToken = jwt.decode(token)
+
+    if (!decodedToken || typeof decodedToken === "string") {
+        throw new Error("Token inválido ou ausente");
+    }
+
+    return decodedToken as typeof usersSchema.$inferSelect;
 }

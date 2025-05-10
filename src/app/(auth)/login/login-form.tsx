@@ -2,11 +2,11 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getFileURL } from "@/server/bucket";
-import { zodResolver } from "@hookform/resolvers/zod"
+import { getFileURL } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
-import { z } from "zod"
+import { z } from "zod";
 
 // Validação de CPF com Zod usando expressão regular e função customizada
 const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
@@ -69,7 +69,7 @@ export default function LoginForm({ loginFn }: LoginFormProps) {
           boxShadow: "0px 0px 30px rgba(0,0,0,0.25)"
         }} onSubmit={form.handleSubmit(submit)}>
           <div className="flex flex-col items-center gap-5">
-            <Image src={`${getFileURL('/icons/icon-transparent.png')}`} alt="logo associação e grupo quatro estações" width={150} height={150} />
+            <Image src={`${getFileURL('icons/icon-transparent.png')}`} alt="logo associação e grupo quatro estações" width={150} height={150} />
             <h1 className="font-bold text-pink-700">Painel Associação e Grupo 4 estações</h1>
           </div>
           <div className="space-y-7 w-full">
