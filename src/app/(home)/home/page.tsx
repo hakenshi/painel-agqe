@@ -1,8 +1,10 @@
 import { getAllEvents } from "@/actions/events";
 import { getAllSponsors } from "@/actions/sponsors";
 import { getAllUsers } from "@/actions/user";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs } from "@/components/ui/tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { Calendar, Users, HandHeart, Handshake } from "lucide-react";
 
 export default async function HomePage() {
@@ -85,11 +87,11 @@ export default async function HomePage() {
           <CardHeader>
             <CardTitle>
               <div>Gráfico de Doações</div>
-                <span className="font-normal text-sm text-zinc-500">Gráfico mostrando o número de doações realizadas neste mês e no ano atual.</span>
+              <span className="font-normal text-sm text-zinc-500">Gráfico mostrando o número de doações realizadas neste mês e no ano atual.</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            
+
           </CardContent>
           <CardFooter className="inline-flex justify-end">
             <Button>Ver mais</Button>
@@ -99,14 +101,30 @@ export default async function HomePage() {
           <CardHeader>
             <CardTitle>
               <div>Atividade recente</div>
-                <span className="font-normal text-sm text-zinc-500">Atividade recente através da plataforma.</span>
+              <span className="font-normal text-sm text-zinc-500">Atividade recente através da plataforma.</span>
+              <Tabs>
+                <TabsList>
+                  <TabsTrigger className={buttonVariants({variant: "default"})} value="doacoes">
+                      Doações
+                  </TabsTrigger>
+
+                  <TabsTrigger className={buttonVariants({variant: "default"})} value="eventos">
+                      Eventos
+                  </TabsTrigger>
+                  <TabsContent value="doacoes">
+                    doacoes
+                  </TabsContent>
+                  <TabsContent value="eventos">
+                    Eventos
+                  </TabsContent>
+                </TabsList>
+              </Tabs>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            
           </CardContent>
           <CardContent>
-            
+
           </CardContent>
           <CardFooter className="inline-flex justify-end">
             <Button>Ver mais</Button>
