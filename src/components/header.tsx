@@ -8,7 +8,7 @@ export default async function Header() {
 
     return (
         <header className="border-zinc-200 col-span-2 row-span-1 h-fit">
-            <nav className="p-5 mx-15 flex justify-between items-center">
+            <nav className="py-3 mx-5 flex justify-between items-center">
                 <div className="flex items-center w-full gap-3">
                     <Image width={75} height={75} alt="teste" src={getFileURL("icons/icon-transparent.png")} />
                     <span className="font-medium text-pink-600">Painel AGQE</span>

@@ -1,3 +1,5 @@
+'use server'
+
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { db, usersSchema } from "@/db/schema";
@@ -6,7 +8,6 @@ import jwt from "jsonwebtoken"
 import { redirect } from "next/navigation";
 
 export const login = async (cpf: string, password: string) => {
-    'use server'
     const user = await db.select().from(usersSchema).where(eq(usersSchema.cpf, cpf)).limit(1);
     if (!user.length) {
         throw new Error("Usuário não encontrado");
