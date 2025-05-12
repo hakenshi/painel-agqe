@@ -1,6 +1,5 @@
-import { CircleDollarSignIcon, HouseIcon, LayoutDashboardIcon, UsersIcon } from 'lucide-react'
+import { CalendarIcon, CircleDollarSignIcon, HandshakeIcon, LayoutDashboardIcon, UsersIcon } from 'lucide-react'
 import Link from 'next/link'
-import React from 'react'
 import { buttonVariants } from './ui/button'
 
 export default function Sidebar() {
@@ -14,23 +13,23 @@ export default function Sidebar() {
                         </Link>
                     </li>
                     <li className="w-full">
-                        <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-start gap-3"} href={"/home"}>
+                        <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-start gap-3"} href={"/usuarios"}>
                             <UsersIcon /> <span className='font-medium'>Usuários</span>
                         </Link>
                     </li>
                     <li className="w-full">
-                        <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-start gap-3"} href={"/home"}>
+                        <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-start gap-3"} href={"/doacoes"}>
                             <CircleDollarSignIcon /> <span className='font-medium'>Doações</span>
                         </Link>
                     </li>
                     <li className="w-full">
-                        <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-start gap-3"} href={"/home"}>
-                            <HouseIcon /> <span className='font-medium'>Eventos</span>
+                        <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-start gap-3"} href={"/eventos"}>
+                            <CalendarIcon /> <span className='font-medium'>Eventos</span>
                         </Link>
                     </li>
                     <li className="w-full">
-                        <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-start gap-3"} href={"/home"}>
-                            <HouseIcon /> <span className='font-medium'>Apoiadores</span>
+                        <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-start gap-3"} href={"/apoiadores"}>
+                            <HandshakeIcon /> <span className='font-medium'>Apoiadores</span>
                         </Link>
                     </li>
                 </ul>
