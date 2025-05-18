@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react'
 
 export default function DashboardShell({ children }: PropsWithChildren) {
     return (
-        <section className='space-y-5 px-5 py-3'>
+        <section className='gap-3 px-5 grid max-h-fit overflow-y-scroll'>
             {children}
         </section>
     )

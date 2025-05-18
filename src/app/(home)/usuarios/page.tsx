@@ -2,8 +2,13 @@ import DashboardHeader from "@/components/dashboard/dashboard-header";
 import DashboardShell from "@/components/dashboard/dashboard-shell";
 import DashboardTable from "@/components/dashboard/dashboard-table";
 import { UserPlusIcon } from "lucide-react";
+import { userColumns } from "./columns";
+import { getAllUsers } from "@/actions/user";
 
-export default function UsuariosPage() {
+export default async function UsuariosPage() {
+
+  const users = await getAllUsers()
+
   return (
     <DashboardShell>
       <DashboardHeader
@@ -12,7 +17,7 @@ export default function UsuariosPage() {
         action={<><UserPlusIcon /> Cadastrar Usuário</>}>
         xd
       </DashboardHeader>
-      <DashboardTable />
-    </DashboardShell >
+      <DashboardTable filterColumns={['occupation']} columns={userColumns} data={users} />
+    </DashboardShell>
   )
 }

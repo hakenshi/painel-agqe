@@ -12,30 +12,30 @@ function getFileURL(key: string) {
 async function seed() {
     console.log("seeding the database.")
 
-    const usersToInsert = [
-        { 
-            firstName: 'Felipe', 
-            secondName: 'Kafka Dias', 
-            photo: getFileURL('images/volunteer/felipe-kafka-dias.png'), 
-            occupation: 'Administrator', 
-            color: 'black', 
-            joinedAt: new Date(), 
-            cpf: '492.596.328-70', 
-            birthDate: new Date('1970-01-01'), 
-            password: bcrypt.hashSync('123', 10) 
+    const usersToInsert: Array<typeof usersSchema.$inferInsert> = [
+        {
+            firstName: 'Felipe',
+            secondName: 'Kafka Dias',
+            photo: getFileURL('images/volunteer/felipe-kafka-dias.png'),
+            occupation: 'Administrator',
+            color: 'black',
+            joinedAt: new Date(),
+            cpf: '492.596.328-70',
+            birthDate: new Date('1970-01-01').toISOString().slice(0, 10),
+            password: bcrypt.hashSync('123', 10)
         },
-        { firstName: 'João Pedro', secondName: 'G. B. de Oliveira', photo: getFileURL("images/volunteer/JoaoPedro.jpg"), occupation: "Presidente", color: "pink", joinedAt: new Date(), cpf: '123.456.789-00', birthDate: new Date('1990-05-15'), password: bcrypt.hashSync('1990-05-15', 10) },
-        { firstName: 'Wellington', secondName: 'Ambrozio Jacó', photo: getFileURL("images/volunteer/Wellington.jpg"), occupation: "Vice-Presidente", color: "purple", joinedAt: new Date(), cpf: '234.567.890-11', birthDate: new Date('1988-11-02'), password: bcrypt.hashSync('1988-11-02', 10) },
-        { firstName: 'Chrysthopher', secondName: 'Eluís Dekay', photo: getFileURL("images/volunteer/Chrysthopher.jpg"), occupation: "Assessor de Políticas", color: "blue", joinedAt: new Date(), cpf: '345.678.901-22', birthDate: new Date('1992-07-20'), password: bcrypt.hashSync('1992-07-20', 10) },
-        { firstName: 'Patricia', secondName: 'Maria M. T. Mollo', photo: getFileURL("images/volunteer/Patricia.jpg"), occupation: "Advogada", color: "teal", joinedAt: new Date(), cpf: '456.789.012-33', birthDate: new Date('1985-03-10'), password: bcrypt.hashSync('1985-03-10', 10) },
-        { firstName: 'Alessandra', secondName: 'Windson Francis', photo: getFileURL("images/volunteer/Alessandra.jpg"), occupation: "Coordenadora Trans", color: "red", joinedAt: new Date(), cpf: '567.890.123-44', birthDate: new Date('1993-12-01'), password: bcrypt.hashSync('1993-12-01', 10) },
-        { firstName: 'Ettore', secondName: 'Yazbeck', photo: getFileURL("images/volunteer/Ettore.jpg"), occupation: "Coordenador de Eventos", color: "indigo", joinedAt: new Date(), cpf: '678.901.234-55', birthDate: new Date('1987-09-25'), password: bcrypt.hashSync('1987-09-25', 10) },
-        { firstName: 'Pedro', secondName: 'Alves', photo: getFileURL("images/volunteer/Pedro.jpg"), occupation: "Coordenador de Eventos", color: "yellow", joinedAt: new Date(), cpf: '789.012.345-66', birthDate: new Date('1991-06-30'), password: bcrypt.hashSync('1991-06-30', 10) },
-        { firstName: 'Wellington', secondName: 'Freitas', photo: getFileURL("images/volunteer/WellingtonF.JPG"), occupation: "Coordenador de Eventos", color: "green", joinedAt: new Date(), cpf: '890.123.456-77', birthDate: new Date('1989-01-18'), password: bcrypt.hashSync('1989-01-18', 10) },
-        { firstName: 'Mitchell', secondName: 'Willyans R.', photo: getFileURL("images/volunteer/Mitchell.jpg"), occupation: "Assessor de Eventos", color: "gray", joinedAt: new Date(), cpf: '901.234.567-88', birthDate: new Date('1994-08-05'), password: bcrypt.hashSync('1994-08-05', 10) },
-        { firstName: 'Lou', secondName: 'Bruscato', photo: getFileURL("images/volunteer/Luigi..jpg"), occupation: "Coord. Jovens/Adolesc.", color: "orange", joinedAt: new Date(), cpf: '012.345.678-99', birthDate: new Date('2000-02-14'), password: bcrypt.hashSync('2000-02-14', 10) },
-        { firstName: 'Luís Felipe', secondName: 'Colósimo', photo: getFileURL("images/volunteer/luisFelipe.jpg"), occupation: "Web Designer", color: "cyan", joinedAt: new Date(), cpf: '111.222.333-00', birthDate: new Date('1995-10-22'), password: bcrypt.hashSync('1995-10-22', 10) },
-        { firstName: 'Amanda', secondName: 'Domingues', photo: getFileURL("images/volunteer/amanda.jpg"), occupation: "Coord. Ações/Eventos", color: "lime", joinedAt: new Date(), cpf: '222.333.444-11', birthDate: new Date('1996-04-12'), password: bcrypt.hashSync('1996-04-12', 10) }
+        { firstName: 'João Pedro', secondName: 'G. B. de Oliveira', photo: getFileURL("images/volunteer/JoaoPedro.jpg"), occupation: "Presidente", color: "pink", joinedAt: new Date(), cpf: '123.456.789-00', birthDate: new Date('1990-05-15').toISOString().slice(0, 10), password: bcrypt.hashSync('1990-05-15', 10) },
+        { firstName: 'Wellington', secondName: 'Ambrozio Jacó', photo: getFileURL("images/volunteer/Wellington.jpg"), occupation: "Vice-Presidente", color: "purple", joinedAt: new Date(), cpf: '234.567.890-11', birthDate: new Date('1988-11-02').toISOString().slice(0, 10), password: bcrypt.hashSync('1988-11-02', 10) },
+        { firstName: 'Chrysthopher', secondName: 'Eluís Dekay', photo: getFileURL("images/volunteer/Chrysthopher.jpg"), occupation: "Assessor de Políticas", color: "blue", joinedAt: new Date(), cpf: '345.678.901-22', birthDate: new Date('1992-07-20').toISOString().slice(0, 10), password: bcrypt.hashSync('1992-07-20', 10) },
+        { firstName: 'Patricia', secondName: 'Maria M. T. Mollo', photo: getFileURL("images/volunteer/Patricia.jpg"), occupation: "Advogada", color: "teal", joinedAt: new Date(), cpf: '456.789.012-33', birthDate: new Date('1985-03-10').toISOString().slice(0, 10), password: bcrypt.hashSync('1985-03-10', 10) },
+        { firstName: 'Alessandra', secondName: 'Windson Francis', photo: getFileURL("images/volunteer/Alessandra.jpg"), occupation: "Coordenadora Trans", color: "red", joinedAt: new Date(), cpf: '567.890.123-44', birthDate: new Date('1993-12-01').toISOString().slice(0, 10), password: bcrypt.hashSync('1993-12-01', 10) },
+        { firstName: 'Ettore', secondName: 'Yazbeck', photo: getFileURL("images/volunteer/Ettore.jpg"), occupation: "Coordenador de Eventos", color: "indigo", joinedAt: new Date(), cpf: '678.901.234-55', birthDate: new Date('1987-09-25').toISOString().slice(0, 10), password: bcrypt.hashSync('1987-09-25', 10) },
+        { firstName: 'Pedro', secondName: 'Alves', photo: getFileURL("images/volunteer/Pedro.jpg"), occupation: "Coordenador de Eventos", color: "yellow", joinedAt: new Date(), cpf: '789.012.345-66', birthDate: new Date('1991-06-30').toISOString().slice(0, 10), password: bcrypt.hashSync('1991-06-30', 10) },
+        { firstName: 'Wellington', secondName: 'Freitas', photo: getFileURL("images/volunteer/WellingtonF.JPG"), occupation: "Coordenador de Eventos", color: "green", joinedAt: new Date(), cpf: '890.123.456-77', birthDate: new Date('1989-01-18').toISOString().slice(0, 10), password: bcrypt.hashSync('1989-01-18', 10) },
+        { firstName: 'Mitchell', secondName: 'Willyans R.', photo: getFileURL("images/volunteer/Mitchell.jpg"), occupation: "Assessor de Eventos", color: "gray", joinedAt: new Date(), cpf: '901.234.567-88', birthDate: new Date('1994-08-05').toISOString().slice(0, 10), password: bcrypt.hashSync('1994-08-05', 10) },
+        { firstName: 'Lou', secondName: 'Bruscato', photo: getFileURL("images/volunteer/Luigi..jpg"), occupation: "Coord. Jovens/Adolesc.", color: "orange", joinedAt: new Date(), cpf: '012.345.678-99', birthDate: new Date('2000-02-14').toISOString().slice(0, 10), password: bcrypt.hashSync('2000-02-14', 10) },
+        { firstName: 'Luís Felipe', secondName: 'Colósimo', photo: getFileURL("images/volunteer/luisFelipe.jpg"), occupation: "Web Designer", color: "cyan", joinedAt: new Date(), cpf: '111.222.333-00', birthDate: new Date('1995-10-22').toISOString().slice(0, 10), password: bcrypt.hashSync('1995-10-22', 10) },
+        { firstName: 'Amanda', secondName: 'Domingues', photo: getFileURL("images/volunteer/amanda.jpg"), occupation: "Coord. Ações/Eventos", color: "lime", joinedAt: new Date(), cpf: '222.333.444-11', birthDate: new Date('1996-04-12').toISOString().slice(0, 10), password: bcrypt.hashSync('1996-04-12', 10) }
     ];
     const sponsorsToInsert = [
         { name: "Doritos", logo: getFileURL("images/apoio/1.png"), website: "", sponsoringSince: new Date() },

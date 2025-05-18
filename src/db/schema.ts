@@ -11,15 +11,18 @@ const pool = new Pool({
 });
 export const db = drizzle({ client: pool });
 
+export const colorsEnum = pgEnum('colors', ["black", "pink", "purple", "blue", "teal", "red", "indigo", "yellow", "green", "gray", "orange", "cyan", "lime"])
+
 export const usersSchema = pgTable('users', {
     id: serial('id').primaryKey().notNull(),
     cpf: varchar('cpf', { length: 14 }).notNull(),
+    color: colorsEnum('colors').notNull().default("pink"),
     firstName: varchar('first_name', { length: 255 }).notNull(),
     secondName: varchar('second_name', { length: 255 }).notNull(),
-    photo: varchar("photo"),
+    photo: varchar("photo").notNull(),
     occupation: varchar("occupation", { length: 255 }).notNull(),
     password: varchar('password', { length: 255 }).notNull(),
-    brithDate: date("birth_date"),
+    birthDate: date("birth_date").notNull(),
     joinedAt: timestamp("joined_at").notNull(),
     createAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date())
@@ -36,7 +39,6 @@ export const sponsorsSchema = pgTable('sponsors', {
 })
 
 export const eventTypeEnum = pgEnum('event_type', ['gallery', 'event', 'event_gallery']);
-
 export const eventsSchema = pgTable('events', {
     id: serial('id').primaryKey().notNull(),
     name: varchar('name', { length: 255 }).notNull(),
