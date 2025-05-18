@@ -1,6 +1,9 @@
 'use client'
 
+import { deleteUser } from "@/actions/user"
+import DashboardTableActions from "@/components/dashboard/dashboard-table-actions"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Form } from "./form"
 import { usersSchema } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
 import { UserIcon } from "lucide-react"
@@ -52,5 +55,12 @@ export const userColumns: ColumnDef<typeof usersSchema.$inferSelect>[] = [
             dateStyle: "short",
             timeStyle: "short"
         }).format(new Date(row.original.joinedAt))
+    },
+    {
+        header: "",
+        accessorKey: "actions",
+        cell: ({row}) => (
+            <DashboardTableActions deleteFn={() => deleteUser(row.original.id)} updateForm={<Form />} />
+        )
     }
 ]

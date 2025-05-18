@@ -1,12 +1,12 @@
 'use client'
 
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
-import { ChevronLeft, ChevronRight, SearchIcon } from 'lucide-react'
-import { Input } from '../ui/input'
-import { Button, buttonVariants } from '../ui/button'
+import { ChevronLeft, ChevronRight, FilterIcon, FilterXIcon, SearchIcon } from 'lucide-react'
 import { useState } from 'react'
-import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
+import { Button, buttonVariants } from '../ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
+import { Input } from '../ui/input'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 
 interface DashboardTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -40,20 +40,49 @@ export default function DashboardTable<TData, TValue>({ columns, data, filterCol
         }
     })
 
+    const columnName = table.getColumn(filterColumns[0])?.columnDef.header as string
+    const columnDef = table.getColumn(filterColumns[0])?.id as string
+
+    const filterData = columnDef
+        ? [...new Set(data.map(d => d[columnDef as keyof TData]))]
+        : [];
+
+        const resetFilters = () => {
+            table.getColumn(columnDef)?.setFilterValue('')
+            setGlobalFilter('')
+        }
+
     return (
         <>
             <div className='inline-flex gap-3'>
-                <div className="relative flex-1">
+                <div className="relative flex-1 flex gap-5">
                     <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                         value={globalFilter ?? ''}
                         onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="pl-8 w-full" />
-                    <DropdownMenu>
-                        <DropdownMenuTrigger className={buttonVariants({ variant: 'default' })}>
-                            {table.getColumn(filterColumns[0])}
-                        </DropdownMenuTrigger>
-                    </DropdownMenu>
+                        className="pl-8 " />
+                    {columnDef && (
+                        <>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className={buttonVariants({ variant: 'default' })}>
+                                    {columnName as string} <FilterIcon />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    {filterData.map((fd, i) => (
+                                        <DropdownMenuItem
+                                            key={i}
+                                            onClick={() => table.getColumn(columnDef)?.setFilterValue(fd)}
+                                        >
+                                            {fd as string}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <Button onClick={resetFilters}>
+                                <FilterXIcon />
+                            </Button>
+                        </>
+                    )}
                 </div>
             </div>
             <div className='overflow-y-hidden h-[65.5vh] hide-scrollbar'>
