@@ -2,11 +2,13 @@
 
 import { db, usersSchema } from "@/db/schema";
 import { userFormSchema, UserFormValues } from "@/lib/zod/zod-user-schema";
-import { deleteFileFromBucket } from "@/server/bucket";
+import { deleteFileFromBucket, storeFileUrl, updateFileInBucket, uploadFileToBucket } from "@/server/bucket";
 import bcrypt from 'bcrypt';
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { v6 } from "uuid";
 import { ZodError } from "zod";
+
 
 export async function getAllUsers() {
     try {
@@ -29,6 +31,7 @@ export async function createUser(userData: UserFormValues) {
 
         const newUser = await db.insert(usersSchema).values({
             ...parsedData,
+            photo: await storeFileUrl(parsedData.photo),
             birthDate: parsedData.birthDate.toISOString().slice(0, 10),
             joinedAt: parsedData.joinedAt.toISOString().slice(0, 10),
             password: hashedPassword
@@ -53,19 +56,44 @@ export async function updateUser(userId: number, userData: Partial<UserFormValue
     try {
         const parsedData = userFormSchema.parse(userData);
 
-        const oldUserData = await db.select().from(usersSchema).where(eq(usersSchema.id, userId))
-        const updateFields = {
-            ...parsedData,
-            birthDate: parsedData.birthDate ? parsedData.birthDate.toISOString().slice(0, 10) : oldUserData[0].birthDate,
-            joinedAt: parsedData.joinedAt ? parsedData.joinedAt.toISOString().slice(0, 10) : oldUserData[0].joinedAt
+        const oldUserData = await db.query.usersSchema.findFirst({
+            where: eq(usersSchema.id, userId)
+        })
+
+        if (!oldUserData) {
+            console.error("User not found")
+            throw new Error("User not found")
+        }
+
+        const updateFields: Partial<typeof usersSchema.$inferInsert> = {
+            birthDate: parsedData.birthDate ? parsedData.birthDate.toISOString().slice(0, 10) : oldUserData.birthDate,
+            joinedAt: parsedData.joinedAt ? parsedData.joinedAt.toISOString().slice(0, 10) : oldUserData.joinedAt
         }
         if (parsedData.password) {
             updateFields.password = await bcrypt.hash(parsedData.password, 10)
         } else {
-            updateFields.password = oldUserData[0].password
+            updateFields.password = oldUserData.password
         }
 
-        const updatedUser = await db.update(usersSchema).set(updateFields).where(eq(usersSchema.id, userId)).returning();
+        if (oldUserData.photo) {
+            const updatedFileUrl = await updateFileInBucket(oldUserData.photo, parsedData.photo)
+            if (updatedFileUrl) {
+                updateFields.photo = updatedFileUrl
+            }
+        } else if (parsedData.photo) {
+            const newFileUrl = await storeFileUrl(parsedData.photo)
+            if (newFileUrl) {
+                updateFields.photo = newFileUrl
+            }
+        }
+        const updatedUser = await db.update(usersSchema).set({
+            ...updateFields,
+            firstName: parsedData.firstName,
+            secondName: parsedData.secondName,
+            color: parsedData.color,
+            cpf: parsedData.cpf,
+            occupation: parsedData.occupation,
+        }).where(eq(usersSchema.id, userId)).returning();
 
         revalidatePath('/usuarios');
         return {

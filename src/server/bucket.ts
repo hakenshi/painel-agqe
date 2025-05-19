@@ -2,6 +2,7 @@
 
 import { getFileURL } from "@/lib/utils"
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"
+import { v6 } from "uuid"
 
 const s3Client = new S3Client({
     region: "auto",
@@ -12,7 +13,7 @@ const s3Client = new S3Client({
     }
 })
 
-export async function uploadFileToBucket(
+async function uploadFileToBucket(
     bucketFilePath: string,
     fileBody: Buffer | ReadableStream | string,
     contentType: string
@@ -60,10 +61,35 @@ export async function deleteFileFromBucket(bucketFilePath: string): Promise<{ su
 }
 
 export async function updateFileInBucket(
-    bucketFilePath: string,
-    fileBody: Buffer | ReadableStream | string,
-    contentType: string
-): Promise<string> {
-    console.log(`Updating file: ${bucketFilePath}`)
-    return uploadFileToBucket(bucketFilePath, fileBody, contentType)
+    bucketFilePathToDelete: string,
+    newFileToUpload: File | null | undefined,
+): Promise<string | null | undefined> {
+    try {
+        await deleteFileFromBucket(bucketFilePathToDelete)
+        console.log(`Attempted to delete old file at: ${bucketFilePathToDelete}`)
+    } catch {
+        console.error(`Could not delete file at ${bucketFilePathToDelete}`)
+    }
+    const newFileUrl = await storeFileUrl(newFileToUpload)
+    return newFileUrl
+}
+
+export async function storeFileUrl(file: File | null | undefined) {
+    let photoUrl: string | undefined | null = null
+
+    if (file instanceof File) {
+        try {
+            const fileExtension = file.name.split('.').pop()
+            const uniqueFileName = `${v6()}.${fileExtension}`
+            const bucketFilePath = `images/volunteer/${uniqueFileName}`
+            const arrayBuffer = await file.arrayBuffer()
+            const buffer = Buffer.from(arrayBuffer)
+            photoUrl = await uploadFileToBucket(bucketFilePath, buffer, file.type)
+            return photoUrl
+        } catch (uploadError) {
+            console.error("Error uploading file: ", uploadError)
+            throw new Error("Something went wrong while trying to store a file")
+        }
+    }
+    return null
 }

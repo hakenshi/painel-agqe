@@ -19,7 +19,7 @@ import { Input } from '../../../components/ui/input'
 export default function CreateUserForm() {
     const defaultValues: Partial<UserFormValues> = {
         color: "pink",
-        photo: "",
+        photo: undefined,
         firstName: "",
         secondName: "",
         cpf: "",
@@ -93,6 +93,29 @@ export default function CreateUserForm() {
                     )}
                 />
 
+                    <FormField
+                        control={form.control}
+                        name="photo"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Foto</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0]
+                                            if (file) {
+                                                field.onChange(file) 
+                                            }
+                                        }}
+
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
                 <FormField
                     control={form.control}
@@ -142,7 +165,7 @@ export default function CreateUserForm() {
                         <FormItem>
                             <FormLabel>Senha</FormLabel>
                             <FormControl>
-                                <Input type="password" placeholder="Insira uma senha" {...field} />
+                                <Input type="password" placeholder="Insira uma senha" {...field} value={field.value ?? ''} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

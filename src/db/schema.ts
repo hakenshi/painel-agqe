@@ -14,7 +14,7 @@ export const usersSchema = pgTable('users', {
     color: colorsEnum('colors').notNull().default("pink"),
     firstName: varchar('first_name', { length: 255 }).notNull(),
     secondName: varchar('second_name', { length: 255 }).notNull(),
-    photo: varchar("photo").notNull(),
+    photo: varchar("photo"),
     occupation: varchar("occupation", { length: 255 }).notNull(),
     password: varchar('password', { length: 255 }).notNull(),
     birthDate: date("birth_date").notNull(),

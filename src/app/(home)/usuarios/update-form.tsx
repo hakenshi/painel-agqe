@@ -22,7 +22,7 @@ export default function UpdateUserForm({ data, id }: { data: Partial<typeof user
 
     const defaultValues: Partial<UserFormValues> = {
         color: data ? data.color : "pink",
-        photo: data?.photo ?? "",
+        photo: undefined,
         firstName: data?.firstName ?? "",
         secondName: data?.secondName ?? "",
         cpf: data?.cpf ?? "",
@@ -108,6 +108,29 @@ export default function UpdateUserForm({ data, id }: { data: Partial<typeof user
                             )}
                         />
 
+                        <FormField
+                            control={form.control}
+                            name="photo"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Foto</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0]
+                                                if (file) {
+                                                    field.onChange(file)
+                                                }
+                                            }}
+
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                             control={form.control}
