@@ -1,4 +1,4 @@
-import { Pencil, Trash } from 'lucide-react'
+import { Trash } from 'lucide-react'
 import { ReactNode, useState } from 'react'
 import { Button } from '../ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'

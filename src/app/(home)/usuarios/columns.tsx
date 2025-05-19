@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { usersSchema } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
 import { UserIcon } from "lucide-react"
-import UserForm from "./form"
+import UpdateUserForm from "./update-form"
 
 
 export const userColumns: ColumnDef<typeof usersSchema.$inferSelect>[] = [
@@ -65,7 +65,7 @@ export const userColumns: ColumnDef<typeof usersSchema.$inferSelect>[] = [
 
             return (
                 <DashboardTableActions
-                    updateForm={<UserForm data={row.original} id={id} />}
+                    updateForm={<UpdateUserForm data={row.original} id={id} />}
                     id={id}
                     deleteFn={async () => {
                         await deleteUser(id);

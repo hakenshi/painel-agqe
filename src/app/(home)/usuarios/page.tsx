@@ -1,10 +1,10 @@
+import { getAllUsers } from "@/actions/user";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
 import DashboardShell from "@/components/dashboard/dashboard-shell";
 import DashboardTable from "@/components/dashboard/dashboard-table";
 import { UserPlusIcon } from "lucide-react";
 import { userColumns } from "./columns";
-import { getAllUsers } from "@/actions/user";
-import UserForm from "./form";
+import CreateUserForm from "./create-form";
 
 export default async function UsuariosPage() {
 
@@ -16,7 +16,7 @@ export default async function UsuariosPage() {
         description="Organizar, listar e cadastrar usuários."
         title="Usuários"
         action={<><UserPlusIcon /> Cadastrar Usuário</>}>
-        <UserForm />
+        <CreateUserForm />
       </DashboardHeader>
       <DashboardTable filterColumns={['occupation']} columns={userColumns} data={users} />
     </DashboardShell>

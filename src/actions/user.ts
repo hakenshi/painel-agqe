@@ -2,6 +2,7 @@
 
 import { db, usersSchema } from "@/db/schema";
 import { userFormSchema, UserFormValues } from "@/lib/zod/zod-user-schema";
+import { deleteFileFromBucket } from "@/server/bucket";
 import bcrypt from 'bcrypt';
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -35,7 +36,7 @@ export async function createUser(userData: UserFormValues) {
 
         revalidatePath('/usuarios');
         return {
-            sucess: true,
+            success: true,
             userData: `${newUser[0].firstName} ${newUser[0].secondName}`
         };
     } catch (error) {
@@ -68,7 +69,7 @@ export async function updateUser(userId: number, userData: Partial<UserFormValue
 
         revalidatePath('/usuarios');
         return {
-            sucess: true,
+            success: true,
             userData: `${updatedUser[0].firstName} ${updatedUser[0].secondName}`
         };
     } catch (error) {
@@ -87,9 +88,15 @@ export async function deleteUser(userId: number) {
             throw new Error("Valid user ID is required");
         }
 
-        const result = await db.delete(usersSchema).where(eq(usersSchema.id, userId));
+        const deletedUser = await db.delete(usersSchema).where(eq(usersSchema.id, userId)).returning();
+        await deleteFileFromBucket(deletedUser[0].photo)
         revalidatePath('/usuarios');
-        return result;
+        return {
+            success: true,
+            userData: deletedUser.length > 0
+                ? `${deletedUser[0].firstName} ${deletedUser[0].secondName}`
+                : null
+        };
     } catch (error) {
         console.error("Error deleting user:", error);
         throw new Error("Failed to delete user");
