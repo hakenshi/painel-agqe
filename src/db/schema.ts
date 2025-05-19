@@ -6,11 +6,6 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { date, integer, pgEnum, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { Pool } from 'pg';
 
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL!,
-});
-export const db = drizzle({ client: pool });
-
 export const colorsEnum = pgEnum('colors', ["black", "pink", "purple", "blue", "teal", "red", "indigo", "yellow", "green", "gray", "orange", "cyan", "lime"])
 
 export const usersSchema = pgTable('users', {
@@ -70,3 +65,12 @@ export const imageEventsRelation = relations(eventImagesSchema, ({ one }) => ({
         references: [eventsSchema.id]
     })
 }))
+
+
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL!,
+});
+
+const schema = { usersSchema, sponsorsSchema, eventsSchema, eventImagesSchema }
+
+export const db = drizzle(pool, { schema });

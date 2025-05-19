@@ -88,9 +88,59 @@ export async function deleteUser(userId: number) {
             throw new Error("Valid user ID is required");
         }
 
-        const deletedUser = await db.delete(usersSchema).where(eq(usersSchema.id, userId)).returning();
-        await deleteFileFromBucket(deletedUser[0].photo)
+        const userToDelete = await db.query.usersSchema.findFirst({
+            where: eq(usersSchema.id, userId),
+            columns: {
+                photo: true,
+                firstName: true,
+                secondName: true
+            }
+        })
+
+        if (!userToDelete) {
+            console.log(`User not found`)
+            revalidatePath("/")
+            return {
+                success: false,
+                userData: null,
+                message: "Usuário não encontrado"
+            }
+        }
+
+        if (userToDelete.photo) {
+            const photoUrl = userToDelete.photo
+            const r2PublicDOmain = process.env.NEXT_PUBLIC_CLOUDFLARE_R2_ENDPOINT
+            if (!r2PublicDOmain) {
+                throw new Error("Bucket public url is undefined.")
+            }
+
+            const baseUrl = `${r2PublicDOmain}/`
+            let objectKey = photoUrl
+
+            if (photoUrl.startsWith(baseUrl)) {
+                objectKey = photoUrl.substring(baseUrl.length)
+            } else {
+                console.warn(`Url of file ${photoUrl} doesn't start with expected base url "${baseUrl}"`)
+            }
+
+            if (objectKey) {
+                try {
+                    await deleteFileFromBucket(objectKey)
+                } catch (error) {
+                    console.error(`Failed to deleted file ${objectKey}`, error)
+                    throw new Error(`Faild to remove file from storage`)
+                }
+            }
+
+        }
+
+        const deletedUser = await db.delete(usersSchema).where(eq(usersSchema.id, userId)).returning({
+            firstName: usersSchema.firstName,
+            secondName: usersSchema.secondName
+        });
+
         revalidatePath('/usuarios');
+
         return {
             success: true,
             userData: deletedUser.length > 0
@@ -99,6 +149,10 @@ export async function deleteUser(userId: number) {
         };
     } catch (error) {
         console.error("Error deleting user:", error);
+        if (error instanceof Error) {
+            throw new Error(error.message)
+        }
+
         throw new Error("Failed to delete user");
     }
 }

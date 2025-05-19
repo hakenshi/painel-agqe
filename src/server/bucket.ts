@@ -38,7 +38,7 @@ export async function deleteFileFromBucket(bucketFilePath: string): Promise<{ su
     try {
         const command = new DeleteObjectCommand({
             Bucket: process.env.CLOUDFLARE_R2_BUCKET,
-            Key: bucketFilePath
+            Key: bucketFilePath,
         })
 
         await s3Client.send(command)
