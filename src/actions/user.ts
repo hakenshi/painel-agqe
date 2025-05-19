@@ -2,11 +2,10 @@
 
 import { db, usersSchema } from "@/db/schema";
 import { userFormSchema, UserFormValues } from "@/lib/zod/zod-user-schema";
-import { deleteFileFromBucket, storeFileUrl, updateFileInBucket, uploadFileToBucket } from "@/server/bucket";
+import { deleteFileFromBucket, storeFileUrl, updateFileInBucket } from "@/server/bucket";
 import bcrypt from 'bcrypt';
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { v6 } from "uuid";
 import { ZodError } from "zod";
 
 

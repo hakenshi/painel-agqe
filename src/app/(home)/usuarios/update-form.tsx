@@ -180,7 +180,7 @@ export default function UpdateUserForm({ data, id }: { data: Partial<typeof user
                                 <FormItem>
                                     <FormLabel>Senha</FormLabel>
                                     <FormControl>
-                                        <Input type="password" placeholder="Insira uma senha" {...field} />
+                                        <Input type="password" placeholder="Insira uma senha" {...field} value={field.value ?? ""} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
