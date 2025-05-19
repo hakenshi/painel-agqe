@@ -11,27 +11,13 @@ interface DashboardTableActionsProps {
 
 export default function DashboardTableActions({ deleteFn, updateForm, id }: DashboardTableActionsProps) {
 
-    const [isOpen, setIsOpen] = useState(false)
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     return (
         <div className="flex items-center gap-3">
             {/* Update Dialog */}
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="outline" size="icon">
-                        <Pencil className="h-4 w-4" />
-                        <span className="sr-only">Editar</span>
-                    </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Editar</DialogTitle>
-                    </DialogHeader>
                     {updateForm}
-                </DialogContent>
-            </Dialog>
-
             {/* Delete Dialog */}
-            <Dialog onOpenChange={setIsOpen} open={isOpen} >
+            <Dialog onOpenChange={setIsDeleteOpen} open={isDeleteOpen} >
                 <DialogTrigger asChild>
                     <Button variant="outline" size="icon" className="text-destructive hover:text-destructive/80">
                         <Trash className="h-4 w-4" />
@@ -61,5 +47,5 @@ export default function DashboardTableActions({ deleteFn, updateForm, id }: Dash
                 </DialogContent>
             </Dialog>
         </div>
-)
+    )
 }
