@@ -1,55 +1,34 @@
 'use client'
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
+import { createUser, updateUser } from "@/actions/user"
+import InputCPF from "@/components/input-cpf"
 import { Button } from "@/components/ui/button"
-import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { format } from "date-fns"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import InputCPF, { cpfRegex, isValidCPF } from "@/components/input-cpf"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { usersSchema } from "@/db/schema"
+import { cn } from "@/lib/utils"
+import { UserFormValues, userFormSchema, colors } from "@/lib/zod/zod-user-schema"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { format } from "date-fns"
+import { CalendarIcon } from "lucide-react"
+import { useMemo } from "react"
+import { useForm } from "react-hook-form"
 
-const colors = [
-    { value: "pink", displayValue: "Rosa" },
-    { value: "blue", displayValue: "Azul" },
-    { value: "green", displayValue: "Verde" },
-    { value: "yellow", displayValue: "Amarelo" },
-    { value: "red", displayValue: "Vermelho" },
-    { value: "purple", displayValue: "Roxo" },
-    { value: "orange", displayValue: "Laranja" },
-    { value: "black", displayValue: "Preto" },
-    { value: "white", displayValue: "Branco" },
-] as const;
-
-const userFormSchema = z.object({
-    cpf: z.string().regex(cpfRegex).refine(isValidCPF, { message: "CPF Inválido" }),
-    color: z.enum(["pink", "blue", "green", "yellow", "red", "purple", "orange", "black", "white"]),
-    firstName: z.string().min(1, "Nome é obrigatório.").max(255),
-    secondName: z.string().min(1, "Sobrenome é obrigatório.").max(255),
-    photo: z.string().url("URL da foto inválida.").or(z.literal("")),
-    occupation: z.string().min(1, "Ocupação é obrigatória.").max(255),
-    password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres.").max(255),
-    birthDate: z.date({
-        required_error: "Data de nascimento é obrigatória.",
-    }),
-    joinedAt: z.date({
-        required_error: "Data de admissão é obrigatória.",
-    }),
-})
-
-type UserFormValues = z.infer<typeof userFormSchema>
-
-export default function UserForm({ data }: { data?: Partial<typeof usersSchema.$inferInsert> }) {
+export default function UserForm({ data, id }: { data?: Partial<typeof usersSchema.$inferInsert>, id?: number }) {
 
     const defaultValues: Partial<UserFormValues> = {
-        color: data?.color ?? "pink",
+        color: data ? data.color : "pink",
         photo: data?.photo ?? "",
+        firstName: data?.firstName ?? "",
+        secondName: data?.secondName ?? "",
+        cpf: data?.cpf ?? "",
+        occupation: data?.occupation ?? "",
+        password: "",
+        birthDate: data?.birthDate ? new Date(data.birthDate) : undefined,
+        joinedAt: data?.joinedAt ? new Date(data.joinedAt) : undefined,
     }
     const form = useForm<UserFormValues>({
         resolver: zodResolver(userFormSchema),
@@ -57,9 +36,25 @@ export default function UserForm({ data }: { data?: Partial<typeof usersSchema.$
         mode: "onChange",
     })
 
-    function onSubmit(data: UserFormValues) {
-        console.log(data)
+    async function onSubmit(formData: UserFormValues) {
+        const parsedData = userFormSchema.parse(formData)
+        if (id) {
+            console.log("updating userd")
+            await updateUser(id, parsedData)
+        } else {
+            console.log("creating user")
+            await createUser(parsedData)
+        }
     }
+
+    function getYears(start: number, end: number) {
+        const years = []
+        for (let y = start; y <= end; y++) years.push(y)
+        return years
+    }
+    const currentYear = new Date().getFullYear()
+    const years = useMemo(() => getYears(1900, currentYear), [currentYear])
+
 
     return (
         <Form {...form}>
@@ -148,7 +143,6 @@ export default function UserForm({ data }: { data?: Partial<typeof usersSchema.$
                         </FormItem>
                     )}
                 />
-
                 <FormField
                     control={form.control}
                     name="password"
@@ -162,7 +156,6 @@ export default function UserForm({ data }: { data?: Partial<typeof usersSchema.$
                         </FormItem>
                     )}
                 />
-
                 <FormField
                     control={form.control}
                     name="birthDate"
@@ -189,14 +182,44 @@ export default function UserForm({ data }: { data?: Partial<typeof usersSchema.$
                                     </FormControl>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto p-0" align="start">
+                                    <div className="flex items-center gap-2 px-3 pt-3">
+                                        <select
+                                            className="border rounded px-2 py-1 text-sm"
+                                            value={field.value ? field.value.getFullYear() : currentYear}
+                                            onChange={e => {
+                                                const year = Number(e.target.value)
+                                                const date = field.value ?? new Date()
+                                                field.onChange(new Date(year, date.getMonth(), date.getDate()))
+                                            }}
+                                        >
+                                            {years.map(y => (
+                                                <option key={y} value={y}>{y}</option>
+                                            ))}
+                                        </select>
+                                        <select
+                                            className="border rounded px-2 py-1 text-sm"
+                                            value={field.value ? field.value.getMonth() : new Date().getMonth()}
+                                            onChange={e => {
+                                                const month = Number(e.target.value)
+                                                const date = field.value ?? new Date()
+                                                field.onChange(new Date(date.getFullYear(), month, date.getDate()))
+                                            }}
+                                        >
+                                            {Array.from({ length: 12 }).map((_, i) => (
+                                                <option key={i} value={i}>{format(new Date(2000, i), "MMMM")}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
                                         onSelect={field.onChange}
-                                        disabled={(date) =>
+                                        disabled={date =>
                                             date > new Date() || date < new Date("1900-01-01")
                                         }
                                         initialFocus
+                                        month={field.value ?? new Date()}
+                                        onMonthChange={month => field.onChange(month)}
                                     />
                                 </PopoverContent>
                             </Popover>
@@ -204,7 +227,6 @@ export default function UserForm({ data }: { data?: Partial<typeof usersSchema.$
                         </FormItem>
                     )}
                 />
-
                 <FormField
                     control={form.control}
                     name="joinedAt"
@@ -217,7 +239,7 @@ export default function UserForm({ data }: { data?: Partial<typeof usersSchema.$
                                         <Button
                                             variant={"outline"}
                                             className={cn(
-                                                "pl-3 text-left font-normal w-full",
+                                                "w-full pl-3 text-left font-normal",
                                                 !field.value && "text-muted-foreground"
                                             )}
                                         >
@@ -231,14 +253,44 @@ export default function UserForm({ data }: { data?: Partial<typeof usersSchema.$
                                     </FormControl>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto p-0" align="start">
+                                    <div className="flex items-center gap-2 px-3 pt-3">
+                                        <select
+                                            className="border rounded px-2 py-1 text-sm"
+                                            value={field.value ? field.value.getFullYear() : currentYear}
+                                            onChange={e => {
+                                                const year = Number(e.target.value)
+                                                const date = field.value ?? new Date()
+                                                field.onChange(new Date(year, date.getMonth(), date.getDate()))
+                                            }}
+                                        >
+                                            {years.map(y => (
+                                                <option key={y} value={y}>{y}</option>
+                                            ))}
+                                        </select>
+                                        <select
+                                            className="border rounded px-2 py-1 text-sm"
+                                            value={field.value ? field.value.getMonth() : new Date().getMonth()}
+                                            onChange={e => {
+                                                const month = Number(e.target.value)
+                                                const date = field.value ?? new Date()
+                                                field.onChange(new Date(date.getFullYear(), month, date.getDate()))
+                                            }}
+                                        >
+                                            {Array.from({ length: 12 }).map((_, i) => (
+                                                <option key={i} value={i}>{format(new Date(2000, i), "MMMM")}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
                                         onSelect={field.onChange}
-                                        disabled={(date) =>
-                                            date > new Date()
+                                        disabled={date =>
+                                            date > new Date() || date < new Date("1900-01-01")
                                         }
                                         initialFocus
+                                        month={field.value ?? new Date()}
+                                        onMonthChange={month => field.onChange(month)}
                                     />
                                 </PopoverContent>
                             </Popover>
@@ -246,8 +298,9 @@ export default function UserForm({ data }: { data?: Partial<typeof usersSchema.$
                         </FormItem>
                     )}
                 />
-
-                <div className="w-full text-end"><Button type="submit">Salvar Usuário</Button></div>
+                <Button className="w-full" type="submit">
+                    {data ? "Editar" : "Cadastrar"}
+                </Button>
             </form>
         </Form>
     )

@@ -1,17 +1,19 @@
 import { Pencil, Trash } from 'lucide-react'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import { Button } from '../ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 
 interface DashboardTableActionsProps {
+    id: number
     updateForm: ReactNode
-    deleteFn: VoidFunction
+    deleteFn(id: number): Promise<void>
 }
 
-export default function DashboardTableActions({ deleteFn, updateForm }: DashboardTableActionsProps) {
+export default function DashboardTableActions({ deleteFn, updateForm, id }: DashboardTableActionsProps) {
+
+    const [isOpen, setIsOpen] = useState(false)
     return (
-        <>
-            <div className="flex items-center space-x-2"></div>
+        <div className="flex items-center gap-3">
             {/* Update Dialog */}
             <Dialog>
                 <DialogTrigger asChild>
@@ -29,7 +31,7 @@ export default function DashboardTableActions({ deleteFn, updateForm }: Dashboar
             </Dialog>
 
             {/* Delete Dialog */}
-            <Dialog>
+            <Dialog onOpenChange={setIsOpen} open={isOpen} >
                 <DialogTrigger asChild>
                     <Button variant="outline" size="icon" className="text-destructive hover:text-destructive/80">
                         <Trash className="h-4 w-4" />
@@ -47,12 +49,17 @@ export default function DashboardTableActions({ deleteFn, updateForm }: Dashboar
                         <DialogClose asChild>
                             <Button variant="outline">Cancelar</Button>
                         </DialogClose>
-                        <Button variant="destructive" onClick={deleteFn}>
+                        <Button
+                            variant="destructive"
+                            onClick={async () => {
+                                await deleteFn(id)
+                            }}
+                        >
                             Excluir
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </>
-    )
+        </div>
+)
 }

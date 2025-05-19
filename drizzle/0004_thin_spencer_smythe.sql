@@ -1,0 +1,1 @@
+ALTER TABLE "users" ALTER COLUMN "joined_at" SET DATA TYPE date;

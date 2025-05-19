@@ -3,10 +3,11 @@
 import { deleteUser } from "@/actions/user"
 import DashboardTableActions from "@/components/dashboard/dashboard-table-actions"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Form } from "./form"
 import { usersSchema } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
 import { UserIcon } from "lucide-react"
+import UserForm from "./form"
+
 
 export const userColumns: ColumnDef<typeof usersSchema.$inferSelect>[] = [
     {
@@ -59,8 +60,18 @@ export const userColumns: ColumnDef<typeof usersSchema.$inferSelect>[] = [
     {
         header: "",
         accessorKey: "actions",
-        cell: ({row}) => (
-            <DashboardTableActions deleteFn={() => deleteUser(row.original.id)} updateForm={<Form />} />
-        )
+        cell: ({ row }) => {
+            const { id } = row.original
+
+            return (
+                <DashboardTableActions
+                    updateForm={<UserForm data={row.original} id={id} />}
+                    id={id}
+                    deleteFn={async () => {
+                        await deleteUser(id);
+                        return;
+                    }} />
+            )
+        }
     }
 ]

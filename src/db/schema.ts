@@ -23,7 +23,7 @@ export const usersSchema = pgTable('users', {
     occupation: varchar("occupation", { length: 255 }).notNull(),
     password: varchar('password', { length: 255 }).notNull(),
     birthDate: date("birth_date").notNull(),
-    joinedAt: timestamp("joined_at").notNull(),
+    joinedAt: date("joined_at").notNull(),
     createAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date())
 })
