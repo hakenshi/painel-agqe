@@ -1,5 +1,7 @@
+import React from 'react'
+
 export default function DoacoesPage() {
   return (
-    <div>page</div>
+    <div>Doacoes</div>
   )
 }

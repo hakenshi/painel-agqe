@@ -20,7 +20,7 @@ export const usersSchema = pgTable('users', {
     birthDate: date("birth_date").notNull(),
     joinedAt: date("joined_at").notNull(),
     createAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date())
+    updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => new Date())
 })
 
 export const sponsorsSchema = pgTable('sponsors', {
@@ -30,7 +30,7 @@ export const sponsorsSchema = pgTable('sponsors', {
     website: varchar('website', { length: 255 }).notNull(),
     sponsoringSince: timestamp('sponsoring_since').notNull(),
     createAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date())
+    updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date())
 })
 
 export const eventTypeEnum = pgEnum('event_type', ['gallery', 'event', 'event_gallery']);
@@ -44,7 +44,7 @@ export const eventsSchema = pgTable('events', {
     date: timestamp('date').notNull(),
     location: varchar('location', { length: 255 }).notNull(),
     createAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date())
+    updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date())
 })
 
 export const eventImagesSchema = pgTable('event_images', {
@@ -52,7 +52,7 @@ export const eventImagesSchema = pgTable('event_images', {
     eventId: integer('event_id').references(() => eventsSchema.id).notNull(),
     imageUrl: varchar('image_url').notNull(),
     createAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date())
+    updatedAt: timestamp('updated_at').defaultNow().notNull().$onUpdate(() => new Date())
 })
 
 export const eventImagesRelation = relations(eventsSchema, ({ many }) => ({

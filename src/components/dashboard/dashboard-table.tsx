@@ -40,8 +40,8 @@ export default function DashboardTable<TData, TValue>({ columns, data, filterCol
         }
     })
 
-    const columnName = table.getColumn(filterColumns[0])?.columnDef.header as string
-    const columnDef = table.getColumn(filterColumns[0])?.id as string
+    const columnName = filterColumns[0] ? table.getColumn(filterColumns[0])?.columnDef.header as string : ""
+    const columnDef = filterColumns[0] ? table.getColumn(filterColumns[0])?.id as string : ""
 
     const filterData = columnDef
         ? [...new Set(data.map(d => d[columnDef as keyof TData]))]

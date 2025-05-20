@@ -1,5 +1,6 @@
 import Header from '@/components/header'
 import Sidebar from '@/components/sidebar'
+import { Toaster } from '@/components/ui/sonner'
 import React, { PropsWithChildren } from 'react'
 
 export default function HomeLayout({ children }: PropsWithChildren) {
@@ -9,6 +10,7 @@ export default function HomeLayout({ children }: PropsWithChildren) {
       <Sidebar />
       <main className="col-start-2 row-start-2 p-5 border rounded-tl-xl overflow-y-scroll">
         {children}
+        <Toaster />
       </main>
     </div>
   )
