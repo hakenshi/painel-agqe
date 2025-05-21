@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'react-hook-form'
+import { createEvent } from '@/actions/events'
 
 const eventTypes = [
     { type: "event", displayName: "Evento" },
@@ -27,13 +28,19 @@ export default function CreateEventForm() {
         },
     })
 
-    function createEvent() {
-
+    async function submitEvent(values: EventFormValues) {
+        try {
+            const parsedValues = eventsFormSchema.parse(values)
+            await createEvent(parsedValues)
+        } catch (error) {
+            // handle validation error here
+            console.error(error)
+        }
     }
 
     return (
         <Form {...form}>
-            <form className='space-y-6' onSubmit={form.handleSubmit(createEvent)}>
+            <form className='space-y-6' onSubmit={form.handleSubmit(submitEvent)}>
                 <FormField
                     control={form.control}
                     name='name'
@@ -87,7 +94,7 @@ export default function CreateEventForm() {
                 />
                 <FormField
                     control={form.control}
-                    name='type'
+                    name='date'
                     render={({ field }) => (
                         <DatePicker field={field} label='Data do Evento' />
                     )}
