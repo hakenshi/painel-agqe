@@ -1,7 +1,7 @@
 import React from 'react'
 
-export default function DoacoesPage() {
+export default function DonationsPage() {
   return (
-    <div>Doacoes</div>
+    <div>page</div>
   )
 }

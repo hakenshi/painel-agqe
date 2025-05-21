@@ -29,10 +29,6 @@ export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
 		accessorKey: "location",
 	},
 	{
-		header: "Slug",
-		accessorKey: "slug",
-	},
-	{
 		header: "Última atualização",
 		accessorKey: "updatedAt",
 		cell: ({ row }) => {
@@ -44,26 +40,15 @@ export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
 			}).format(new Date(updatedAt));
 		},
 	},
-	// {
-	// 	header: "",
-	// 	accessorKey: "actions",
-	// 	cell: ({ row }) => {
-	// 		const { id } = row.original;
+	{
+		header: "",
+		accessorKey: "actions",
+		cell: ({ row }) => {
+			const { id } = row.original;
 
-	// 		return (
-	// 			<DashboardTableActions
-	// 				updateForm={<UpdateEventForm event={row.original} />} // Adicione o formulário de atualização
-	// 				id={id}
-	// 				deleteFn={async () => {
-	// 					// Adicionado deleteFn (comentado para implementação futura)
-	// 					// await deleteEvent(id); // Implemente e descomente
-	// 					// return;
-	// 					console.log("Delete function for event ID:", id);
-	// 					toast.info("Funcionalidade de deletar evento ainda não implementada.");
-	// 				}}
-	// 				// itemName={row.original.name} // Mantenha comentado ou ajuste conforme necessário
-	// 			/>
-	// 		);
-	// 	},
-	// },
+			return (
+				id
+			);
+		},
+	},
 ];
