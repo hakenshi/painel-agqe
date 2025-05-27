@@ -10,6 +10,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'react-hook-form'
 import { createEvent } from '@/actions/events'
+import TimePicker from '@/components/time-picker'
 
 const eventTypes = [
     { type: "event", displayName: "Evento" },
@@ -21,20 +22,19 @@ export default function CreateEventForm() {
     const form = useForm<EventFormValues>({
         resolver: zodResolver(eventsFormSchema),
         defaultValues: {
-            date: undefined,
-            location: "",
-            name: "",
+            date: new Date(),
+            location: "Test Location",
+            name: "Test Event",
             type: "event",
+            ending_time: "18:00",
+            starting_time: "16:00",
         },
     })
 
     async function submitEvent(values: EventFormValues) {
-        try {
-            const parsedValues = eventsFormSchema.parse(values)
+        const parsedValues = eventsFormSchema.parse(values)
+        if (parsedValues) {
             await createEvent(parsedValues)
-        } catch (error) {
-            // handle validation error here
-            console.error(error)
         }
     }
 
@@ -97,6 +97,28 @@ export default function CreateEventForm() {
                     name='date'
                     render={({ field }) => (
                         <DatePicker field={field} label='Data do Evento' />
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name='starting_time'
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel> Horário de Início do Evento</FormLabel>
+                            <TimePicker field={field} />
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name='ending_time'
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel> Horário de Término do Evento</FormLabel>
+                            <TimePicker field={field} />
+                            <FormMessage />
+                        </FormItem>
                     )}
                 />
                 <div className="text-end"><Button type='submit'>Criar Evento</Button></div>

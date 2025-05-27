@@ -9,6 +9,8 @@ type EventData = {
     type: "event" | "gallery" | "event_gallery"
     location: string
     date: string
+    starting_time: string
+    ending_time: string
 }
 
 export default async function NovoEvento() {
@@ -24,10 +26,10 @@ export default async function NovoEvento() {
                     Salvar
                 </Button>
             </div>
-            <form className="container mx-auto px-4 lg:px-6">
+            <form className="px-4 lg:px-6 relative">
                 {eventData ? (<div className="flex flex-col lg:flex-row justify-center gap-10 items-start">
 
-                    <div className="lg:w-1/3 flex items-center flex-col justify-center">
+                    <div className="lg:w-1/3 flex items-center flex-col justify-center top-0 sticky">
                         <div className="flex items-center justify-center w-full h-96">
                             <ImagePreview />
                         </div>
@@ -46,7 +48,7 @@ export default async function NovoEvento() {
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <ClockIcon className="w-5 mr-2 text-purple-600" />
-                                {new Date(eventData.date).toLocaleTimeString()}
+                                {eventData.starting_time} - {eventData.ending_time}
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <MapPinIcon className="w-5 mr-2 text-purple-600" />
@@ -56,14 +58,16 @@ export default async function NovoEvento() {
                     </div>
 
                     {/* Conteúdo do evento */}
-                    <div className="lg:w-6/12">
-                        <p className="text-sm uppercase text-pink-600 font-semibold mb-1">
-                            Próximo Evento
-                        </p>
-                        <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-6 leading-tight">
-                            {eventData.name}
-                        </h1>
-                       <EventArticle />
+                    <div className="lg:w-6/12 relative">
+                        <div>
+                            <p className="text-sm uppercase text-pink-600 font-semibold mb-1">
+                                Próximo Evento
+                            </p>
+                            <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-6 leading-tight">
+                                {eventData.name}
+                            </h1>
+                        </div>
+                        <EventArticle />
                     </div>
                 </div>) : (
                     <div className='h-[75vh] flex items-center justify-center'>

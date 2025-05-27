@@ -15,13 +15,16 @@ export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
 	{
 		header: "Data",
 		accessorKey: "date",
-		cell: ({ row }) => {
-			const date = row.original.date;
+		cell: ({ row: { original } }) => {
+			const date = original.date;
+			const startingTime = original.startingTime;
+			const endingTime = original.endingTime;
 			if (!date) return "N/A";
-			return new Intl.DateTimeFormat("pt-BR", {
-				dateStyle: "long",
-				timeStyle: "short",
-			}).format(new Date(date));
+			return <div>
+				{new Intl.DateTimeFormat("pt-BR", {
+					dateStyle: "short",
+				}).format(new Date(date))} 
+			</div>;
 		},
 	},
 	{
