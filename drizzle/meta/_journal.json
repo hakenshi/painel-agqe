@@ -43,6 +43,13 @@
       "when": 1748358165043,
       "tag": "0005_magenta_unicorn",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1748365456532,
+      "tag": "0006_illegal_micromax",
+      "breakpoints": true
     }
   ]
 }

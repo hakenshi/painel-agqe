@@ -67,13 +67,14 @@ export const eventTypeEnum = pgEnum("event_type", [
   "event",
   "event_gallery",
 ]);
+
 export const eventsSchema = pgTable("events", {
   id: serial("id").primaryKey().notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   eventType: eventTypeEnum("event_type").notNull(),
   slug: varchar("slug", { length: 255 }).notNull(),
   description: varchar("description").notNull(),
-  content: varchar("content"),
+  markdown: varchar("markdown"),
   date: date("date").notNull(),
   startingTime: time("starting_time").notNull(),
   endingTime: time("ending_time").notNull(),

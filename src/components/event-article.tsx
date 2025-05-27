@@ -14,15 +14,13 @@ export default function EventArticle() {
     const [isEditing, setIsEditing] = useState(true)
     const [markdown, setMarkdown] = useState("")
 
-
     return (
         <article className="space-y-5 prose prose-sm sm:prose-base max-w-none prose-p:text-gray-700 prose-p:leading-relaxed prose-strong:text-gray-800">
 
             <div className="space-x-10 text-center">
-                {!isEditing && <Button type="button" onClick={() => setIsEditing(true)}> <PencilIcon /> Editar Markdown</Button>}
-                <Button type="button" onClick={() => setIsEditing(false)}><EyeIcon /> Preview</Button>
+                {!isEditing ? <Button type="button" onClick={() => setIsEditing(true)}> <PencilIcon /> Editar Markdown</Button> : <Button type="button" onClick={() => setIsEditing(false)}><EyeIcon /> Preview</Button>}
             </div>
-
+            <input name="markdown" type="hidden" value={markdown} />
             {isEditing ? (<AutosizeTextarea value={markdown} onChange={(e) => setMarkdown(e.target.value)}></AutosizeTextarea>) : <Markdown
                 skipHtml
                 components={{
