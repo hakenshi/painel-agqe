@@ -1,7 +1,7 @@
 'use client'
 
 import { createUser } from '@/actions/user'
-import DatePicker from '@/components/data-picker'
+import DatePicker from '@/components/date-picker'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { colors, userFormSchema, UserFormValues } from '@/lib/zod/zod-user-schema'
 import { zodResolver } from '@hookform/resolvers/zod'

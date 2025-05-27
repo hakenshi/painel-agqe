@@ -10,14 +10,11 @@ export async function getAllEvents() {
 }
 
 export async function createEvent(eventData: EventFormValues) {
-    try {
-        const parsedData = eventsFormSchema.parse(eventData)
-        const cookie = await cookies()
+    const parsedData = eventsFormSchema.parse(eventData)
+    const cookie = await cookies()
 
-        cookie.set({ name: "event_data", value: JSON.stringify(parsedData), expires: 1.8e+6, httpOnly: true })
-        redirect("/eventos/novo")
-    } catch (error) {
-        console.error(error)
-        throw error
-    }
+    const expires = new Date(Date.now() + 30 * 60 * 1000) // 30 minutos a partir de agora
+    cookie.set({ name: "event_data", value: JSON.stringify(parsedData), expires, httpOnly: true })
+
+    redirect("/eventos/novo")
 }

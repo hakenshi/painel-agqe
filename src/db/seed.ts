@@ -92,7 +92,9 @@ async function seed() {
     Participação e Ingressos: Para este dia, abrimos as portas às 16 horas. A entrada na festa foi gratuita apenas para quem participou do bate-papo (mediante envio prévio de nome para Maria Paula Magalhães).
     Ingressos apenas para a festa foram vendidos antecipadamente por R$ 10,00 ou na portaria por R$ 15,00. Os ingressos eram limitados.
     Regras: Proibida a entrada com bebidas alcoólicas e para menores de 18 anos.`,
-            date: new Date("2020-03-21T16:00:00"),
+            date: new Date("2020-03-21T16:00:00").toISOString().slice(0, 10),
+            startingTime: "16:00",
+            endingTime: "23:00",
             location: "Casa Pagú, São João da Boa Vista"
         },
         {
@@ -101,7 +103,9 @@ async function seed() {
             slug: "12-parada-orgulho-diversidade-sao-joao-da-boa-vista",
             description: "Edição marcante realizada em formato virtual/presencial adaptado.",
             content: `A 12ª edição da Parada do Orgulho da Diversidade chegou mais colorida, empoderada, renovada e com muitas novidades! Devido ao contexto da época (Pandemia COVID-19), o formato e atrações foram adaptados. Apresentação: Judy Rainbow e Convidada Especial. DJs: [Informações não disponíveis]. Shows: [Informações não disponíveis]. Apoio: Prefeitura Municipal de São João da Boa Vista, Departamento Municipal de Cultura, Departamento Municipal de Saúde.`,
-            date: new Date("2020-07-19T13:00:00"),
+            date: new Date("2020-07-19T13:00:00").toISOString().slice(0, 10),
+            startingTime: "13:00",
+            endingTime: "18:00",
             location: "Largo da Estação Ferroviária, São João da Boa Vista"
         },
         {
@@ -110,34 +114,40 @@ async function seed() {
             slug: "11-parada-orgulho-diversidade",
             description: "Celebrando a diversidade e a força inspirada em Frida Kahlo.",
             content: `11ª Parada do Orgulho da Diversidade. Tema: "Todos Podem ser Frida."`,
-            date: new Date("2019-07-21T13:00:00"),
+            date: new Date("2019-07-21T13:00:00").toISOString().slice(0, 10),
+            startingTime: "13:00",
+            endingTime: "18:00",
             location: "São João da Boa Vista"
         }
     ];
 
     try {
-        console.log("Deleting existing users...")
-        await db.delete(usersSchema)
+        async function deleteData() {
+            console.log("Deleting existing users...")
+            await db.delete(usersSchema)
 
-        console.log("Inserting new users...")
-        await db.insert(usersSchema).values(usersToInsert)
+            console.log("Deleting existing sponsors...")
+            await db.delete(sponsorsSchema)
 
-        console.log("Deleting existing sponsors...")
-        await db.delete(sponsorsSchema)
-        console.log("Inserting new sponsors...")
-        await db.insert(sponsorsSchema).values(sponsorsToInsert)
+            console.log("Deleting existing event images...")
+            await db.delete(eventImagesSchema)
 
-        console.log("Deleting existing event images...")
-        await db.delete(eventImagesSchema)
+            console.log("Deleting existing events...")
+            await db.delete(eventsSchema) // Corrected from eventImagesSchema
+        }
 
-        console.log("Deleting existing events...")
-        await db.delete(eventImagesSchema)
+        async function insertData() {
+            console.log("Inserting new users...")
+            await db.insert(usersSchema).values(usersToInsert)
 
-        console.log("Inserting new events...")
-        const insertedEvents = await db.insert(eventsSchema).values(eventsToInsert).returning({ id: eventsSchema.id, slug: eventsSchema.slug })
-        const eventMap = Object.fromEntries(insertedEvents.map(e => [e.slug, e.id]));
+            console.log("Inserting new sponsors...")
+            await db.insert(sponsorsSchema).values(sponsorsToInsert)
 
-        const eventImagesToInsert = [
+            console.log("Inserting new events...")
+            const insertedEvents = await db.insert(eventsSchema).values(eventsToInsert).returning({ id: eventsSchema.id, slug: eventsSchema.slug })
+            const eventMap = Object.fromEntries(insertedEvents.map(e => [e.slug, e.id]));
+
+            const eventImagesToInsert = [
             // PROIBIDO PROIBIR
             { eventId: eventMap["proibido-proibir-roda-de-conversa-sobre-hiv-festa"], imageUrl: getFileURL("images/event/pp_baner.jpeg") },
             // 12ª Parada
@@ -147,10 +157,14 @@ async function seed() {
                 eventId: eventMap["11-parada-orgulho-diversidade"],
                 imageUrl: getFileURL(`images/parada11/${i + 1}.jpg`)
             }))
-        ];
+            ];
 
-        console.log("Inserting event images...")
-        await db.insert(eventImagesSchema).values(eventImagesToInsert)
+            console.log("Inserting event images...")
+            await db.insert(eventImagesSchema).values(eventImagesToInsert)
+        }
+
+        // await deleteData();
+        await insertData();
 
         console.log('Database successfully seeded with staff data.')
 

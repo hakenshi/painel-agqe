@@ -75,7 +75,7 @@ export default function LoginForm({ loginFn }: LoginFormProps) {
               )}
             />
           </div>
-          <Button className="font-bold px-8" type="submit">Enviar</Button>
+          <Button disabled={form.formState.isSubmitting} className="font-bold px-8" type="submit">Enviar</Button>
         </form>
       </Form>
     </section>

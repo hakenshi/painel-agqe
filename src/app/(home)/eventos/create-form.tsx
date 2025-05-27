@@ -1,6 +1,6 @@
 'use client'
 
-import DatePicker from '@/components/data-picker'
+import DatePicker from '@/components/date-picker'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectItem, SelectValue, SelectContent, SelectTrigger } from '@/components/ui/select'
