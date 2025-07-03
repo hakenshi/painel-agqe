@@ -109,11 +109,3 @@ export const imageEventsRelation = relations(eventImagesSchema, ({ one }) => ({
     references: [eventsSchema.id],
   }),
 }));
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL!,
-});
-
-const schema = { usersSchema, sponsorsSchema, eventsSchema, eventImagesSchema };
-
-export const db = drizzle(pool, { schema });

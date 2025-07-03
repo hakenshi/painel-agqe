@@ -1,6 +1,7 @@
 'use server'
 
-import { db, usersSchema } from "@/db/schema";
+import { db } from "@/db";
+import { usersSchema } from "@/db/schema";
 import { userFormSchema, UserFormValues } from "@/lib/zod/zod-user-schema";
 import { deleteFileFromBucket, storeFileUrl, updateFileInBucket } from "@/server/bucket";
 import bcrypt from 'bcrypt';
