@@ -1,13 +1,12 @@
 'server-only'
 import bcrypt from 'bcrypt';
-import { usersSchema, sponsorsSchema, eventImagesSchema, eventsSchema, eventTypeEnum, db } from "./schema";
+import { usersSchema, sponsorsSchema, eventImagesSchema, eventsSchema, eventTypeEnum } from "./schema";
+import { db } from '.';
 
 // Função utilitária para montar a URL pública do arquivo no bucket R2
 function getFileURL(key: string) {
     return `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_ENDPOINT}/${key.replace(/^\//, "")}`;
 }
-
-
 
 async function seed() {
     console.log("seeding the database.")
@@ -103,7 +102,6 @@ async function seed() {
             slug: "12-parada-orgulho-diversidade-sao-joao-da-boa-vista",
             description: "Edição marcante realizada em formato virtual/presencial adaptado.",
             markdown: `A 12ª edição da Parada do Orgulho da Diversidade chegou mais colorida, empoderada, renovada e com muitas novidades! Devido ao contexto da época (Pandemia COVID-19), o formato e atrações foram adaptados. Apresentação: Judy Rainbow e Convidada Especial. DJs: [Informações não disponíveis]. Shows: [Informações não disponíveis]. Apoio: Prefeitura Municipal de São João da Boa Vista, Departamento Municipal de Cultura, Departamento Municipal de Saúde.`,
-            markdown: `A 12ª edição da Parada do Orgulho da Diversidade chegou mais colorida, empoderada, renovada e com muitas novidades! Devido ao contexto da época (Pandemia COVID-19), o formato e atrações foram adaptados. Apresentação: Judy Rainbow e Convidada Especial. DJs: [Informações não disponíveis]. Shows: [Informações não disponíveis]. Apoio: Prefeitura Municipal de São João da Boa Vista, Departamento Municipal de Cultura, Departamento Municipal de Saúde.`,
             date: new Date("2020-07-19T13:00:00").toISOString().slice(0, 10),
             startingTime: "13:00",
             endingTime: "18:00",
@@ -164,7 +162,7 @@ async function seed() {
             await db.insert(eventImagesSchema).values(eventImagesToInsert)
         }
 
-        // await deleteData();
+        await deleteData();
         await insertData();
 
         console.log('Database successfully seeded with staff data.')

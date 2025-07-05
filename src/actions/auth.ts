@@ -2,10 +2,11 @@
 
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
-import { db, usersSchema } from "@/db/schema";
+import { usersSchema } from "@/db/schema";
 import { getSession, saveSession } from "@/server/session";
 import jwt from "jsonwebtoken"
 import { redirect } from "next/navigation";
+import { db } from "@/db";
 
 export const login = async (cpf: string, password: string) => {
     const user = await db.select().from(usersSchema).where(eq(usersSchema.cpf, cpf)).limit(1);
