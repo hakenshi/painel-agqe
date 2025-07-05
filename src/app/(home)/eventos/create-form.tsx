@@ -9,8 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'react-hook-form'
-import { createEvent } from '@/actions/events'
 import TimePicker from '@/components/time-picker'
+import { useRouter } from 'next/navigation'
 
 const eventTypes = [
     { type: "event", displayName: "Evento" },
@@ -19,6 +19,7 @@ const eventTypes = [
 ]
 
 export default function CreateEventForm() {
+    const router = useRouter()
     const form = useForm<EventFormValues>({
         resolver: zodResolver(eventsFormSchema),
         defaultValues: {
@@ -34,7 +35,8 @@ export default function CreateEventForm() {
     async function submitEvent(values: EventFormValues) {
         const parsedValues = eventsFormSchema.parse(values)
         if (parsedValues) {
-            await createEvent(parsedValues)
+            sessionStorage.setItem('event_data', JSON.stringify(parsedValues))
+            router.push("/eventos/novo");
         }
     }
 

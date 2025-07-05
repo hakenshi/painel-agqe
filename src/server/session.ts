@@ -7,6 +7,7 @@ const password = `${process.env.JWT_SECRET}`
 
 export async function getSession() {
     const cookie = await cookies()
+
     return getIronSession<{ token: string }>(cookie, {
         password,
         cookieName: "token",

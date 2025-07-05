@@ -19,7 +19,7 @@ export const login = async (cpf: string, password: string) => {
         throw new Error("Senha inválida");
     }
     const token = jwt.sign(user[0], `${process.env.JWT_TOKEN}`)
-
+    
     await saveSession(token)
 
     const session = await getSession()

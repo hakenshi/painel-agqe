@@ -11,3 +11,12 @@ declare namespace NodeJS {
         NEXT_PUBLIC_CLOUDFLARE_R2_ENDPOINT: string
     }
 }
+
+type EventData = {
+    name: string
+    type: "event" | "gallery" | "event_gallery"
+    location: string
+    date: string
+    starting_time: string
+    ending_time: string
+}
