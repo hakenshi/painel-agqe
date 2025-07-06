@@ -31,6 +31,7 @@ export default function ImagePreview() {
                 type="file"
                 accept="image/png"
                 className="hidden"
+                name='cover_image'
                 onChange={handleFileChange}
             />
             

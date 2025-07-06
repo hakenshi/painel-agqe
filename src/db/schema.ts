@@ -2,7 +2,6 @@
 
 import "dotenv/config";
 import { relations } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/node-postgres";
 import {
   date,
   integer,
@@ -13,7 +12,6 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { Pool } from "pg";
 
 export const colorsEnum = pgEnum("colors", [
   "black",
@@ -71,9 +69,9 @@ export const eventTypeEnum = pgEnum("event_type", [
 export const eventsSchema = pgTable("events", {
   id: serial("id").primaryKey().notNull(),
   name: varchar("name", { length: 255 }).notNull(),
+  coverImage: varchar("cover_image").notNull(),
   eventType: eventTypeEnum("event_type").notNull(),
   slug: varchar("slug", { length: 255 }).notNull(),
-  description: varchar("description").notNull(),
   markdown: varchar("markdown"),
   date: date("date").notNull(),
   startingTime: time("starting_time").notNull(),

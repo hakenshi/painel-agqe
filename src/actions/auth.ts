@@ -36,6 +36,5 @@ export async function getAuthUser(): Promise<typeof usersSchema.$inferSelect> {
     if (!decodedToken || typeof decodedToken === "string") {
         throw new Error("Token inválido ou ausente");
     }
-
     return decodedToken as typeof usersSchema.$inferSelect;
 }

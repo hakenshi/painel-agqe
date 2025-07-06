@@ -63,6 +63,7 @@ export async function deleteFileFromBucket(bucketFilePath: string): Promise<{ su
 export async function updateFileInBucket(
     bucketFilePathToDelete: string,
     newFileToUpload: File | null | undefined,
+    folder: string
 ): Promise<string | null | undefined> {
     try {
         await deleteFileFromBucket(bucketFilePathToDelete)
@@ -70,18 +71,17 @@ export async function updateFileInBucket(
     } catch {
         console.error(`Could not delete file at ${bucketFilePathToDelete}`)
     }
-    const newFileUrl = await storeFileUrl(newFileToUpload)
+    const newFileUrl = await storeFileUrl(newFileToUpload, folder)
     return newFileUrl
 }
 
-export async function storeFileUrl(file: File | null | undefined) {
+export async function storeFileUrl(file: File | null | undefined, bucketFolder: string) {
     let photoUrl: string | undefined | null = null
-
     if (file instanceof File) {
         try {
             const fileExtension = file.name.split('.').pop()
             const uniqueFileName = `${v6()}.${fileExtension}`
-            const bucketFilePath = `images/volunteer/${uniqueFileName}`
+            const bucketFilePath = `images/${bucketFolder}/${uniqueFileName}`
             const arrayBuffer = await file.arrayBuffer()
             const buffer = Buffer.from(arrayBuffer)
             photoUrl = await uploadFileToBucket(bucketFilePath, buffer, file.type)

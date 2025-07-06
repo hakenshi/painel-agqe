@@ -1,13 +1,16 @@
 'use client'
 
+import { createEvent } from '@/actions/events'
 import ImagePreview from '@/components/image-preview'
 import { AutosizeTextarea } from '@/components/ui/auto-resize-textarea'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from '@/components/ui/table'
+import { EventFormValues } from '@/lib/zod/zod-events-schema'
 import { ClockIcon, EyeIcon, Link, MapIcon, MapPinIcon, PencilIcon, SaveIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { toast } from 'sonner'
 
 export default function NovoEvento() {
 
@@ -16,6 +19,8 @@ export default function NovoEvento() {
     const [isEditing, setIsEditing] = useState(true)
     const [markdown, setMarkdown] = useState("")
 
+    console.log(eventData)
+
     useEffect(() => {
         if (!eventData) {
             const eventTemporaryData = sessionStorage.getItem('event_data')
@@ -23,9 +28,23 @@ export default function NovoEvento() {
         }
     }, [eventData])
 
+    async function submit(e: FormEvent) {
+        e.preventDefault()
+        const formData = new FormData(e.target as HTMLFormElement)
+
+        if (!eventData) {
+            toast.error("Informações sobre o evento não estão presentes")
+            return
+        }
+        Object.entries(eventData).forEach(([key, value]) => {
+            formData.append(key, value as string)
+        })
+        await createEvent(formData)
+    }
+
     return (
         <section className="py-10 bg-white">
-            <form className="px-4 lg:px-6 relative">
+            <form onSubmit={submit} className="px-4 lg:px-6 relative">
                 {eventData ? (
                     <div className="flex flex-col lg:flex-row justify-center gap-10 items-start">
                         <div className="lg:w-1/3 flex items-center flex-col justify-center top-0 sticky">
