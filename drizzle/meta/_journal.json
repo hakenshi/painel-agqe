@@ -50,6 +50,13 @@
       "when": 1748365456532,
       "tag": "0006_illegal_micromax",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1751820324794,
+      "tag": "0007_common_lester",
+      "breakpoints": true
     }
   ]
 }

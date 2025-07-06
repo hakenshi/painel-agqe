@@ -74,7 +74,7 @@ async function seed() {
         { name: "Armazém Asgard", logo: getFileURL("images/apoio/38.png"), website: "", sponsoringSince: new Date() }
     ];
 
-    const eventsToInsert = [
+    const eventsToInsert: typeof eventsSchema.$inferInsert[] = [
         {
             name: "PROIBIDO PROIBIR: Roda de Conversa sobre HIV + Festa",
             eventType: "event" as typeof eventTypeEnum.enumValues['1'],
@@ -93,7 +93,8 @@ async function seed() {
             date: new Date("2020-03-21T16:00:00").toISOString().slice(0, 10),
             startingTime: "16:00",
             endingTime: "23:00",
-            location: "Casa Pagú, São João da Boa Vista"
+            location: "Casa Pagú, São João da Boa Vista",
+            coverImage: getFileURL("images/event/pp_baner.jpeg")
         },
         {
             name: "12ª Parada do Orgulho da Diversidade de São João da Boa Vista",
@@ -103,7 +104,8 @@ async function seed() {
             date: new Date("2020-07-19T13:00:00").toISOString().slice(0, 10),
             startingTime: "13:00",
             endingTime: "18:00",
-            location: "Largo da Estação Ferroviária, São João da Boa Vista"
+            location: "Largo da Estação Ferroviária, São João da Boa Vista",
+            coverImage: getFileURL("images/event/e1.jpg")
         },
         {
             name: "11ª Parada do Orgulho da Diversidade",
@@ -113,7 +115,8 @@ async function seed() {
             date: new Date("2019-07-21T13:00:00").toISOString().slice(0, 10),
             startingTime: "13:00",
             endingTime: "18:00",
-            location: "São João da Boa Vista"
+            location: "São João da Boa Vista",
+            coverImage: getFileURL("images/parada11/1.jpg")
         }
     ];
 
@@ -159,7 +162,7 @@ async function seed() {
             await db.insert(eventImagesSchema).values(eventImagesToInsert)
         }
 
-        await deleteData();
+        // await deleteData();
         await insertData();
 
         console.log('Database successfully seeded with staff data.')
