@@ -34,10 +34,26 @@ export async function createEvent(eventData: FormData) {
   const parsedDate = new Date(date as string);
   const parsedValues = eventsFormSchema.parse({ date: parsedDate, ...restEntries });
 
+  const exists = await db.query.eventsSchema.findFirst({
+    where: (events, { eq }) => eq(events.slug, stringToSlug(parsedValues.name)),
+  })
+
+  if (exists) {
+    return {
+      success: false,
+      message: "Evento já existe com esse nome",
+      error: "Evento já existe com esse nome",
+    }
+  }
+  
   const coverImage = await storeFileUrl(parsedValues.cover_image, BUCKET_FOLDER);
 
   if (!coverImage) {
-    throw new Error("Failed to upload cover image");
+    return {
+      success: false,
+      message: "Erro ao fazer upload da imagem de capa",
+      error: "Erro ao fazer upload da imagem de capa",
+    }
   }
   const slug = stringToSlug(parsedValues.name);
   const newEvent = await db

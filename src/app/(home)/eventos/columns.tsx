@@ -1,9 +1,21 @@
 "use client";
 
+import TableIcon from "@/components/table-icon";
+import { Button } from "@/components/ui/button";
 import { eventsSchema } from "@/db/schema";
 import { ColumnDef } from "@tanstack/react-table";
+import { EyeIcon, PencilIcon, TrashIcon } from "lucide-react";
 
 export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
+	{
+		header: "",
+		accessorKey: "coverImage",
+		cell: ({ row: { original: { coverImage } } }) => {
+			return (
+				<TableIcon photo={coverImage} />
+			)
+		}
+	},
 	{
 		header: "Nome do Evento",
 		accessorKey: "name",
@@ -13,17 +25,25 @@ export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
 		accessorKey: "eventType",
 	},
 	{
+		header: "Horário",
+		accessorKey: "startingTime",
+		cell: ({ row }) => {
+			const startingTime = row.original.startingTime;
+			const endingTime = row.original.endingTime;
+			if (!startingTime || !endingTime) return "N/A";
+			return `${startingTime} - ${endingTime}`;
+		},
+	},
+	{
 		header: "Data",
 		accessorKey: "date",
 		cell: ({ row: { original } }) => {
 			const date = original.date;
-			const startingTime = original.startingTime;
-			const endingTime = original.endingTime;
 			if (!date) return "N/A";
 			return <div>
 				{new Intl.DateTimeFormat("pt-BR", {
 					dateStyle: "short",
-				}).format(new Date(date))} 
+				}).format(new Date(date))}
 			</div>;
 		},
 	},
@@ -50,7 +70,17 @@ export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
 			const { id } = row.original;
 
 			return (
-				id
+				<div className="space-x-3">
+					<Button>
+						<EyeIcon />
+					</Button>
+					<Button>
+						<PencilIcon />
+					</Button>
+					<Button>
+						<TrashIcon />
+					</Button>
+				</div>
 			);
 		},
 	},

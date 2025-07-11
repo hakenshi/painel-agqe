@@ -2,10 +2,9 @@
 
 import { deleteUser } from "@/actions/user"
 import DashboardTableActions from "@/components/dashboard/dashboard-table-actions"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import TableIcon from "@/components/table-icon"
 import { usersSchema } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
-import { UserIcon } from "lucide-react"
 import UpdateUserForm from "./update-form"
 
 
@@ -13,17 +12,8 @@ export const userColumns: ColumnDef<typeof usersSchema.$inferSelect>[] = [
     {
         header: "Foto",
         accessorKey: 'photo',
-        cell: ({ row }) => (
-            <div className="flex justify-center items-center">
-                <Avatar className='size-12'>
-                    <AvatarImage className='object-cover' src={row.original.photo} />
-                    <AvatarFallback>
-                        <div className='bg-zinc-300 rounded-full p-3'>
-                            <UserIcon />
-                        </div>
-                    </AvatarFallback>
-                </Avatar>
-            </div>
+        cell: ({ row: { original: { photo } } }) => (
+            <TableIcon photo={photo} />
         )
     },
     {
