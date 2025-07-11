@@ -6,6 +6,7 @@ import { AutosizeTextarea } from '@/components/ui/auto-resize-textarea'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ClockIcon, EyeIcon, Link, MapIcon, MapPinIcon, PencilIcon, SaveIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { FormEvent, useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -14,6 +15,8 @@ import { toast } from 'sonner'
 export default function NovoEvento() {
 
     const [eventData, setEventData] = useState<EventData | null>(null)
+
+    const router = useRouter()
 
     const [isEditing, setIsEditing] = useState(true)
     const [markdown, setMarkdown] = useState("")
@@ -38,7 +41,15 @@ export default function NovoEvento() {
         Object.entries(eventData).forEach(([key, value]) => {
             formData.append(key, value as string)
         })
-        await createEvent(formData)
+       const event = await createEvent(formData)
+
+        if (event.success) {
+            toast.success(event.message)
+            sessionStorage.removeItem('event_data')
+            router.push("/eventos")
+        } else {
+            toast.error(event.error || "Erro ao criar evento")
+        }
     }
 
     return (

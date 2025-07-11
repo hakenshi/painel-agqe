@@ -54,5 +54,17 @@ export async function createEvent(eventData: FormData) {
       slug: slug,
     })
     .returning();
-  console.log(newEvent);
+
+  if (newEvent) {
+    return {
+      success: true,
+      message: "Evento criado com sucesso",
+      event: newEvent[0],
+    }
+  }
+  return {
+    success: false,
+    message: "Erro ao criar evento",
+    error: "Erro ao criar evento",
+  }
 }
