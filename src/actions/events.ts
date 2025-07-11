@@ -12,7 +12,8 @@ const BUCKET_FOLDER = "events";
  * Removes accents, special characters, and trims whitespace.
  * Example: "Olá, Mundo!" -> "ola-mundo"
  */
-export function stringToSlug(str: string): string {
+
+function stringToSlug(str: string): string {
   return str
     .normalize("NFD") // decompose accents
     .replace(/[\u0300-\u036f]/g, "") // remove accents
@@ -29,31 +30,29 @@ export async function getAllEvents() {
 
 export async function createEvent(eventData: FormData) {
   const entries = Object.fromEntries(eventData);
-  const eventDate = entries.date ? new Date(entries.date as string) : null;
-  const eventDataEntries = { ...entries, eventDate };
-  const parsedValues = eventsFormSchema.parse(eventDataEntries);
+  const { date, ...restEntries } = entries;
+  const parsedDate = new Date(date as string);
+  const parsedValues = eventsFormSchema.parse({ date: parsedDate, ...restEntries });
 
-  if(!eventDate){
-    throw new Error("A data do evento é obrigatória.")
+  const coverImage = await storeFileUrl(parsedValues.cover_image, BUCKET_FOLDER);
+
+  if (!coverImage) {
+    throw new Error("Failed to upload cover image");
   }
-
-  const coverPhotoUrl = await storeFileUrl(
-    parsedValues.cover_image,
-    BUCKET_FOLDER
-  );
-
   const slug = stringToSlug(parsedValues.name);
-  const { name, starting_time, ending_time, location, type, markdown } = parsedValues;
-
-  const newEvent = await db.insert(eventsSchema).values({
-    name,
-    date: eventDate.toISOString(),
-    startingTime: starting_time,
-    endingTime: ending_time,
-    location,
-    eventType: type,
-    coverImage: coverPhotoUrl ?? "",
-    markdown,
-    slug,
-  });
+  const newEvent = await db
+    .insert(eventsSchema)
+    .values({
+      coverImage: coverImage,
+      date: new Date(parsedValues.date).toISOString(),
+      endingTime: parsedValues.ending_time,
+      startingTime: parsedValues.starting_time,
+      location: parsedValues.location,
+      markdown: parsedValues.markdown,
+      name: parsedValues.name,
+      eventType: parsedValues.type,
+      slug: slug,
+    })
+    .returning();
+  console.log(newEvent);
 }

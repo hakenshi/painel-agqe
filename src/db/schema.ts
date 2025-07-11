@@ -71,7 +71,7 @@ export const eventsSchema = pgTable("events", {
   name: varchar("name", { length: 255 }).notNull(),
   coverImage: varchar("cover_image").notNull(),
   eventType: eventTypeEnum("event_type").notNull(),
-  slug: varchar("slug", { length: 255 }).notNull(),
+  slug: varchar("slug").notNull(),
   markdown: varchar("markdown"),
   date: date("date").notNull(),
   startingTime: time("starting_time").notNull(),
