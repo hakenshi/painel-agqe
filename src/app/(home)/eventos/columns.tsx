@@ -1,10 +1,13 @@
 "use client";
 
 import TableIcon from "@/components/table-icon";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { eventsSchema } from "@/db/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { EyeIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { deleteEvent } from "@/actions/events";
+import { toast } from "sonner";
 
 export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
 	{
@@ -77,9 +80,30 @@ export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
 					<Button>
 						<PencilIcon />
 					</Button>
-					<Button>
-						<TrashIcon />
-					</Button>
+					<Dialog>
+						<DialogTrigger asChild>
+							<Button variant="destructive">
+								<TrashIcon />
+							</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Confirmar exclusão</DialogTitle>
+							</DialogHeader>
+							<p>Tem certeza que deseja excluir este evento?</p>
+							<DialogFooter>
+								<DialogClose className={buttonVariants({ variant: "outline" })}>Cancelar</DialogClose>
+								<Button variant="destructive" onClick={async () => {
+									const { message, success } = await deleteEvent(id)
+									if (success) {
+										toast(message)
+									}
+								}}>
+									Excluir
+								</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
 				</div>
 			);
 		},

@@ -4,6 +4,8 @@ import { db } from "@/db";
 import { eventsSchema } from "@/db/schema";
 import { eventsFormSchema } from "@/lib/zod/zod-events-schema";
 import { storeFileUrl } from "@/server/bucket";
+import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 const BUCKET_FOLDER = "events";
 
@@ -45,14 +47,13 @@ export async function createEvent(eventData: FormData) {
       error: "Evento já existe com esse nome",
     }
   }
-  
+
   const coverImage = await storeFileUrl(parsedValues.cover_image, BUCKET_FOLDER);
 
   if (!coverImage) {
     return {
       success: false,
       message: "Erro ao fazer upload da imagem de capa",
-      error: "Erro ao fazer upload da imagem de capa",
     }
   }
   const slug = stringToSlug(parsedValues.name);
@@ -82,5 +83,25 @@ export async function createEvent(eventData: FormData) {
     success: false,
     message: "Erro ao criar evento",
     error: "Erro ao criar evento",
+  }
+}
+
+export async function deleteEvent(eventId: number) {
+  const event = await db.query.eventsSchema.findFirst({
+    where: eq(eventsSchema.id, eventId),
+  })
+
+  if (!event) {
+    return {
+      success: false,
+      message: "Evento não encontrado"
+    }
+  }
+
+  await db.delete(eventsSchema).where(eq(eventsSchema.id, eventId))
+  revalidatePath("/eventos")
+  return {
+    success: true,
+    message: "Evento excluído com sucesso."
   }
 }
