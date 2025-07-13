@@ -8,6 +8,7 @@ import { EyeIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { deleteEvent } from "@/actions/events";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
 	{
@@ -70,14 +71,14 @@ export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
 		header: "",
 		accessorKey: "actions",
 		cell: ({ row }) => {
-			const { id } = row.original;
+			const { id, eventType, slug } = row.original;
 
 			return (
 				<div className="space-x-3">
-					<Button>
+					<Link className={buttonVariants({variant: "outline"})} target="_blank" href={eventType === "event" || eventType === "event_gallery" ? `${process.env.NEXT_PUBLIC_MAIN_SITE}/eventos/${slug}` : `${process.env.NEXT_PUBLIC_MAIN_SITE}/eventos/${slug}/galeria`}>
 						<EyeIcon />
-					</Button>
-					<Button>
+					</Link>
+					<Button className="bg-sky-500 hover:bg-sky-500/90">
 						<PencilIcon />
 					</Button>
 					<Dialog>
