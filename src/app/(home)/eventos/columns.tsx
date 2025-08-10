@@ -75,12 +75,12 @@ export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
 
 			return (
 				<div className="space-x-3">
-					<Link className={buttonVariants({variant: "outline"})} target="_blank" href={eventType === "event" || eventType === "event_gallery" ? `${process.env.NEXT_PUBLIC_MAIN_SITE}/eventos/${slug}` : `${process.env.NEXT_PUBLIC_MAIN_SITE}/eventos/${slug}/galeria`}>
+					<Link className={buttonVariants({ variant: "outline" })} target="_blank" href={eventType === "event" || eventType === "event_gallery" ? `${process.env.NEXT_PUBLIC_MAIN_SITE}/eventos/${slug}` : `${process.env.NEXT_PUBLIC_MAIN_SITE}/eventos/${slug}/galeria`}>
 						<EyeIcon />
 					</Link>
-					<Button className="bg-sky-500 hover:bg-sky-500/90">
+					<Link href={`/eventos/editar/${id}`} className={buttonVariants({variant: "informative"})}>
 						<PencilIcon />
-					</Button>
+					</Link>
 					<Dialog>
 						<DialogTrigger asChild>
 							<Button variant="destructive">

@@ -4,19 +4,21 @@ import ImagePreview from '@/components/image-preview'
 import { AutosizeTextarea } from '@/components/ui/auto-resize-textarea'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ClockIcon, EyeIcon, Link, MapIcon, MapPinIcon, PencilIcon, SaveIcon } from 'lucide-react'
+import { ClockIcon, EyeIcon, InfoIcon, Link, MapIcon, MapPinIcon, PencilIcon, SaveIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
+import { DialogTrigger } from '@radix-ui/react-dialog'
 
-export default function Evento({eventData}: {eventData: EventData | null}) {
+export default function Evento({ eventData }: { eventData: EventData | null }) {
 
     const router = useRouter()
 
-    const [isEditing, setIsEditing] = useState(true)
-    const [markdown, setMarkdown] = useState("")
+    const [isEditing, setIsEditing] = useState(!eventData?.coverImage)
+    const [markdown, setMarkdown] = useState(eventData?.markdown)
 
     async function submit(e: FormEvent) {
         e.preventDefault()
@@ -55,7 +57,7 @@ export default function Evento({eventData}: {eventData: EventData | null}) {
                         </div>
 
                         <div className="flex items-center justify-center w-full h-96">
-                            <ImagePreview />
+                            <ImagePreview url={eventData.coverImage} />
                         </div>
                         <div className="mt-6 bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm space-y-2 w-96">
                             <h3 className="text-lg font-semibold text-gray-700 mb-3">
@@ -80,6 +82,22 @@ export default function Evento({eventData}: {eventData: EventData | null}) {
                             </div>
                         </div>
                         <div className="mt-5 space-x-3 text-center">
+                            {eventData.coverImage && eventData.markdown &&
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button>
+                                            <InfoIcon /> Editar Informações
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>
+                                                Editar Evento
+                                            </DialogTitle>
+                                        </DialogHeader>
+                                    </DialogContent>
+                                </Dialog>
+                            }
                             {!isEditing ?
                                 <Button type="button" onClick={() => setIsEditing(true)}> <PencilIcon /> Editar Markdown</Button> :
                                 <Button type="button" onClick={() => setIsEditing(false)}><EyeIcon /> Preview</Button>

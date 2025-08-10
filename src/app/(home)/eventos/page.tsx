@@ -3,7 +3,7 @@ import DashboardHeader from "@/components/dashboard/dashboard-header";
 import DashboardShell from "@/components/dashboard/dashboard-shell";
 import DashboardTable from "@/components/dashboard/dashboard-table";
 import { eventColumns } from "./columns";
-import CreateEventForm from "./create-form";
+import CreateEventForm from "./form";
 import { CalendarPlus } from "lucide-react";
 
 export default async function EventosPage() {

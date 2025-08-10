@@ -4,9 +4,9 @@ import { PlusCircleIcon } from 'lucide-react'
 import Image from 'next/image'
 import React, { useRef, useState } from 'react'
 
-export default function ImagePreview() {
+export default function ImagePreview({ url }: { url?: string }) {
     const fileRef = useRef<HTMLInputElement>(null)
-    const [preview, setPreview] = useState<string | null>(null)
+    const [preview, setPreview] = useState<string | undefined>(url)
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0]
@@ -34,7 +34,7 @@ export default function ImagePreview() {
                 name='cover_image'
                 onChange={handleFileChange}
             />
-            
+
             {preview ? (
                 <>
                     <Image

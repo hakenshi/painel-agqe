@@ -20,4 +20,6 @@ type EventData = {
     date: string
     starting_time: string
     ending_time: string
+    coverImage?: string
+    markdown?: string
 }

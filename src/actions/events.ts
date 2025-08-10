@@ -34,27 +34,33 @@ export async function createEvent(eventData: FormData) {
   const entries = Object.fromEntries(eventData);
   const { date, ...restEntries } = entries;
   const parsedDate = new Date(date as string);
-  const parsedValues = eventsFormSchema.parse({ date: parsedDate, ...restEntries });
+  const parsedValues = eventsFormSchema.parse({
+    date: parsedDate,
+    ...restEntries,
+  });
 
   const exists = await db.query.eventsSchema.findFirst({
     where: (events, { eq }) => eq(events.slug, stringToSlug(parsedValues.name)),
-  })
+  });
 
   if (exists) {
     return {
       success: false,
       message: "Evento já existe com esse nome",
       error: "Evento já existe com esse nome",
-    }
+    };
   }
 
-  const coverImage = await storeFileUrl(parsedValues.cover_image, BUCKET_FOLDER);
+  const coverImage = await storeFileUrl(
+    parsedValues.cover_image,
+    BUCKET_FOLDER
+  );
 
   if (!coverImage) {
     return {
       success: false,
       message: "Erro ao fazer upload da imagem de capa",
-    }
+    };
   }
   const slug = stringToSlug(parsedValues.name);
   const newEvent = await db
@@ -77,31 +83,37 @@ export async function createEvent(eventData: FormData) {
       success: true,
       message: "Evento criado com sucesso",
       event: newEvent[0],
-    }
+    };
   }
   return {
     success: false,
     message: "Erro ao criar evento",
     error: "Erro ao criar evento",
-  }
+  };
+}
+
+export async function findEvent(eventId: number) {
+  return await db.query.eventsSchema.findFirst({
+    where: eq(eventsSchema.id, eventId),
+  });
 }
 
 export async function deleteEvent(eventId: number) {
   const event = await db.query.eventsSchema.findFirst({
     where: eq(eventsSchema.id, eventId),
-  })
+  });
 
   if (!event) {
     return {
       success: false,
-      message: "Evento não encontrado"
-    }
+      message: "Evento não encontrado",
+    };
   }
 
-  await db.delete(eventsSchema).where(eq(eventsSchema.id, eventId))
-  revalidatePath("/eventos")
+  await db.delete(eventsSchema).where(eq(eventsSchema.id, eventId));
+  revalidatePath("/eventos");
   return {
     success: true,
-    message: "Evento excluído com sucesso."
-  }
+    message: "Evento excluído com sucesso.",
+  };
 }

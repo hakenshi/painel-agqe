@@ -18,17 +18,17 @@ const eventTypes = [
     { type: "event_gallery", displayName: "Evento e Galeria" }
 ]
 
-export default function CreateEventForm() {
+export default function CreateEventForm({eventData}: {eventData?: EventData}) {
     const router = useRouter()
     const form = useForm<EventFormValues>({
         resolver: zodResolver(eventsFormSchema),
         defaultValues: {
-            date: new Date(),
-            location: "Test Location",
-            name: "Test Event",
-            type: "event",
-            ending_time: "18:00",
-            starting_time: "16:00",
+            date: eventData?.date ? new Date(eventData.date) : undefined,
+            location: eventData?.location ?? "",
+            name: eventData?.name ?? "",
+            type: eventData?.type ?? "event",
+            ending_time: eventData?.ending_time ?? "",
+            starting_time: eventData?.starting_time ?? "",
         },
     })
 
