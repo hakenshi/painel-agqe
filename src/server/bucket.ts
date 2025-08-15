@@ -1,6 +1,7 @@
 'server-only'
 
 import { getFileURL } from "@/lib/utils"
+import { logger } from "@/lib/logger"
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"
 import { v6 } from "uuid"
 
@@ -19,7 +20,7 @@ async function uploadFileToBucket(
     contentType: string
 ): Promise<string> {
     try {
-        console.log(bucketFilePath, fileBody, contentType)
+        logger.info(`Uploading file to bucket: ${bucketFilePath}`);
         const command = new PutObjectCommand({
             Bucket: process.env.CLOUDFLARE_R2_BUCKET,
             Key: bucketFilePath,
@@ -28,10 +29,10 @@ async function uploadFileToBucket(
         })
         await s3Client.send(command)
         const publicUrl = getFileURL(bucketFilePath)
-        console.log(`File sucessfully sent to: ${publicUrl}`)
+        logger.info(`File successfully uploaded to: ${publicUrl}`);
         return publicUrl
     } catch (error) {
-        console.error("Something went wrong while uploading file to bucket:", error)
+        logger.error("Failed to upload file to bucket", error);
         throw error
     }
 }
@@ -45,14 +46,14 @@ export async function deleteFileFromBucket(bucketFilePath: string): Promise<{ su
 
         await s3Client.send(command)
 
-        console.log(`File deleted sucessfuly: ${bucketFilePath}`);
+        logger.info(`File deleted successfully: ${bucketFilePath}`);
         return {
             success: true,
             message: "Arquivo removido com sucesso",
             path: bucketFilePath
         }
     } catch (error) {
-        console.error("Failed to delete file from bucket:", error);
+        logger.error("Failed to delete file from bucket", error);
         return {
             success: false,
             message: "Erro ao remover o arquivo",
@@ -68,9 +69,9 @@ export async function updateFileInBucket(
 ): Promise<string | null | undefined> {
     try {
         await deleteFileFromBucket(bucketFilePathToDelete)
-        console.log(`Attempted to delete old file at: ${bucketFilePathToDelete}`)
-    } catch {
-        console.error(`Could not delete file at ${bucketFilePathToDelete}`)
+        logger.info(`Attempted to delete old file at: ${bucketFilePathToDelete}`)
+    } catch (error) {
+        logger.error(`Could not delete file at ${bucketFilePathToDelete}`, error)
     }
     const newFileUrl = await storeFileUrl(newFileToUpload, folder)
     return newFileUrl
@@ -88,7 +89,7 @@ export async function storeFileUrl(file: File | null | undefined, bucketFolder: 
             photoUrl = await uploadFileToBucket(bucketFilePath, buffer, file.type)
             return photoUrl
         } catch (uploadError) {
-            console.error("Error uploading file: ", uploadError)
+            logger.error("Error uploading file", uploadError)
             throw new Error("Something went wrong while trying to store a file")
         }
     }

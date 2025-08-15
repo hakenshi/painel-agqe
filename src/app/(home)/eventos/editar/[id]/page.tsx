@@ -26,6 +26,6 @@ export default async function EditarEventoPage({ params }: Props) {
       <Evento eventData={normalizedEvent} />
     ) : (
       <Galeria eventData={normalizedEvent} />
-    )
+    ) 
   )
 }

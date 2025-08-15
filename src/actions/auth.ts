@@ -18,7 +18,10 @@ export const login = async (cpf: string, password: string) => {
     if (!valid) {
         throw new Error("Senha inválida");
     }
-    const token = jwt.sign(user[0], `${process.env.JWT_TOKEN}`)
+    if (!process.env.JWT_TOKEN) {
+        throw new Error('JWT_TOKEN environment variable is required')
+    }
+    const token = jwt.sign(user[0], process.env.JWT_TOKEN)
     
     await saveSession(token)
 

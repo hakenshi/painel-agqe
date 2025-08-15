@@ -54,17 +54,19 @@ export default function DashboardTable<TData, TValue>({ columns, data, filterCol
 
     return (
         <>
-            <div className='inline-flex gap-3'>
-                <div className="relative flex-1 flex gap-5">
-                    <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        value={globalFilter ?? ''}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="pl-8 " />
+            <div className='flex flex-col sm:flex-row gap-3'>
+                <div className="relative flex-1 flex flex-col sm:flex-row gap-3 sm:gap-5">
+                    <div className="relative flex-1">
+                        <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            value={globalFilter ?? ''}
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            className="pl-8" />
+                    </div>
                     {columnDef && (
-                        <>
+                        <div className="flex gap-2">
                             <DropdownMenu>
-                                <DropdownMenuTrigger className={buttonVariants({ variant: 'default' })}>
+                                <DropdownMenuTrigger className={buttonVariants({ variant: 'default' }) + " flex-1 sm:flex-none"}>
                                     {columnName as string} <FilterIcon />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
@@ -78,15 +80,15 @@ export default function DashboardTable<TData, TValue>({ columns, data, filterCol
                                     ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <Button onClick={resetFilters}>
+                            <Button onClick={resetFilters} className="flex-1 sm:flex-none">
                                 <FilterXIcon />
                             </Button>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
-            <div className='overflow-y-hidden h-[65.5vh] hide-scrollbar'>
-                <Table>
+            <div className='overflow-x-auto overflow-y-hidden h-[65.5vh] hide-scrollbar'>
+                <Table className="min-w-full">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>

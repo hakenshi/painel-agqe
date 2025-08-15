@@ -4,7 +4,7 @@ import DatePicker from '@/components/date-picker'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectItem, SelectValue, SelectContent, SelectTrigger } from '@/components/ui/select'
-import { EventFormValues, eventsFormSchema } from '@/lib/zod/zod-events-schema'
+import { CreateEventValues, createEventSchema } from '@/lib/zod/zod-events-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import React from 'react'
 import { Button } from '@/components/ui/button'
@@ -20,8 +20,8 @@ const eventTypes = [
 
 export default function CreateEventForm({eventData}: {eventData?: EventData}) {
     const router = useRouter()
-    const form = useForm<EventFormValues>({
-        resolver: zodResolver(eventsFormSchema),
+    const form = useForm<CreateEventValues>({
+        resolver: zodResolver(createEventSchema),
         defaultValues: {
             date: eventData?.date ? new Date(eventData.date) : undefined,
             location: eventData?.location ?? "",
@@ -32,12 +32,9 @@ export default function CreateEventForm({eventData}: {eventData?: EventData}) {
         },
     })
 
-    async function submitEvent(values: EventFormValues) {
-        const parsedValues = eventsFormSchema.parse(values)
-        if (parsedValues) {
-            sessionStorage.setItem('event_data', JSON.stringify(parsedValues))
-            router.push("/eventos/novo");
-        }
+    async function submitEvent(values: CreateEventValues) {
+        sessionStorage.setItem('event_data', JSON.stringify(values))
+        router.push("/eventos/novo");
     }
 
     return (

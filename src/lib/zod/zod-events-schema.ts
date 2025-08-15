@@ -1,50 +1,47 @@
 import { z } from "zod";
+import { imageFileSchema, textSchema } from "./shared";
 
-const MAX_FILE_SIZE = 1024 * 1024 * 2;
+// Base field schemas
+const nameField = textSchema(1, 255).refine(v => v.length > 0, "O nome do evento é obrigatório.");
+const typeField = z.enum(["event", "gallery", "event_gallery"], {
+  errorMap: () => ({ message: "Selecione um tipo de evento válido." }),
+});
+const locationField = textSchema(1, 255).refine(v => v.length > 0, "A localização do evento é obrigatória.");
+const markdownField = z.string()
+  .min(50, { message: "O markdown deve ter no mínimo 50 caractéres." })
+  .refine(
+    (v) => !/<script|<iframe|<object|<embed|<svg/i.test(v),
+    { message: "Tentativa de XSS previnida." }
+  );
+const imageField = imageFileSchema;
+const dateField = z.date({ required_error: "A data do evento é obrigatória." });
+const timeField = z.string().time();
 
-const VALID_MIME_TYPES = ["png", "jpeg", "jpg", "webp"];
-
-export const eventsFormSchema = z.object({
-  name: z.string().trim().min(1, "O nome do evento é obrigatório."),
-  type: z.enum(["event", "gallery", "event_gallery"], {
-    errorMap: () => ({ message: "Selecione um tipo de evento válido." }),
-  }),
-  location: z.string().trim().min(1, "A localização do evento é obrigatória."),
-  markdown: z
-    .string()
-    .min(50, { message: "O markdown deve ter no mínimo 50 caractéres." })
-    .nullish()
-    .refine(
-      (v) => {
-        if (!v) return true;
-        return !/<script|<iframe|<object|<embed|<svg/i.test(v);
-      },
-      { message: "Tentativa de XSS previnida." }
-    ),
-  cover_image: z
-    .instanceof(File)
-    .refine((file) => file.size <= MAX_FILE_SIZE, {
-      message: "A imagem deve ter no máximo 2 MB",
-    })
-    .refine(
-      (file) => {
-        const extension = file.type.split("/").pop();
-        return extension && VALID_MIME_TYPES.includes(extension);
-      },
-      {
-        message: `A imagem deve seguir um dos seguintes formatos: ${VALID_MIME_TYPES.join(
-          ", "
-        )}`,
-      }
-    )
-    .nullish(),
-    
-  date: z.date({
-    required_error: "A data do evento é obrigatória.",
-    invalid_type_error: "Selecione uma data válida.",
-  }),
-  starting_time: z.string().time("Formato de horário inválido para o início."),
-  ending_time: z.string().time("Formato de horário inválido para o término."),
+// Base schema with all required fields
+const baseEventSchema = z.object({
+  name: nameField,
+  type: typeField,
+  location: locationField,
+  date: dateField,
+  starting_time: timeField.refine(v => v, "Formato de horário inválido para o início."),
+  ending_time: timeField.refine(v => v, "Formato de horário inválido para o término."),
 });
 
-export type EventFormValues = z.infer<typeof eventsFormSchema>;
+// Create schema - all fields required, image required, markdown optional
+export const createEventSchema = baseEventSchema.extend({
+  cover_image: imageField,
+  markdown: markdownField.optional().nullable(),
+});
+
+// Update schema - all fields optional
+export const updateEventSchema = baseEventSchema.partial().extend({
+  cover_image: imageField.optional().nullable(),
+  markdown: markdownField.optional().nullable(),
+});
+
+// Legacy export for backward compatibility
+export const eventsFormSchema = createEventSchema;
+
+export type CreateEventValues = z.infer<typeof createEventSchema>;
+export type UpdateEventValues = z.infer<typeof updateEventSchema>;
+export type EventFormValues = CreateEventValues; // Legacy type

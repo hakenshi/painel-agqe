@@ -3,7 +3,10 @@
 import { cookies } from "next/headers"
 import { getIronSession } from "iron-session"
 
-const password = `${process.env.JWT_SECRET}`
+const password = process.env.JWT_SECRET
+if (!password) {
+  throw new Error('JWT_SECRET environment variable is required')
+}
 
 export async function getSession() {
     const cookie = await cookies()

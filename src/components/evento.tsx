@@ -45,9 +45,9 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
     return (
         <form onSubmit={submit} className="px-4 lg:px-6 relative">
             {eventData ? (
-                <div className="flex flex-col lg:flex-row justify-center gap-10 items-start">
-                    <div className="lg:w-1/3 flex items-center flex-col justify-center top-0 sticky">
-                        <div className='inline-flex flex-col text-start justify-start w-9/12'>
+                <div className="flex flex-col lg:flex-row justify-center gap-6 lg:gap-10 items-start">
+                    <div className="w-full lg:w-1/3 flex items-center flex-col justify-center lg:top-0 lg:sticky">
+                        <div className='inline-flex flex-col text-start justify-start w-full lg:w-9/12'>
                             <p className="text-xs uppercase text-pink-600 font-semibold mb-1">
                                 Próximo Evento
                             </p>
@@ -59,7 +59,7 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
                         <div className="flex items-center justify-center w-full h-96">
                             <ImagePreview url={eventData.coverImage} />
                         </div>
-                        <div className="mt-6 bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm space-y-2 w-96">
+                        <div className="mt-6 bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm space-y-2 w-full max-w-96">
                             <h3 className="text-lg font-semibold text-gray-700 mb-3">
                                 Detalhes do Evento
                             </h3>
@@ -81,7 +81,7 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
                                 {eventData.location}
                             </div>
                         </div>
-                        <div className="mt-5 space-x-3 text-center">
+                        <div className="mt-5 flex flex-col sm:flex-row gap-3 sm:space-x-3 text-center">
                             {eventData.coverImage && eventData.markdown &&
                                 <Dialog>
                                     <DialogTrigger asChild>
@@ -110,7 +110,7 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
                     </div>
 
                     {/* Conteúdo do evento */}
-                    <div className="lg:w-6/12 ">
+                    <div className="w-full lg:w-6/12">
                         <article className="space-y-5 prose prose-sm sm:prose-base max-w-none prose-p:text-gray-700 prose-p:leading-relaxed prose-strong:text-gray-800 overflow-y-scroll">
                             <input name="markdown" type="hidden" value={markdown} />
                             {isEditing ? (<AutosizeTextarea value={markdown} onChange={(e) => setMarkdown(e.target.value)}></AutosizeTextarea>) : (

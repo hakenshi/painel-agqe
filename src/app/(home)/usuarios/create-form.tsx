@@ -3,7 +3,7 @@
 import { createUser } from '@/actions/user'
 import DatePicker from '@/components/date-picker'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { colors, userFormSchema, UserFormValues } from '@/lib/zod/zod-user-schema'
+import { colors, createUserSchema, CreateUserValues } from '@/lib/zod/zod-user-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import InputCPF from '../../../components/input-cpf'
@@ -12,27 +12,21 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../../../components/ui/input'
 
 export default function CreateUserForm() {
-    const defaultValues: Partial<UserFormValues> = {
-        color: "pink",
-        photo: undefined,
-        firstName: "",
-        secondName: "",
-        cpf: "",
-        occupation: "",
-        password: "",
-        birthDate: undefined,
-        joinedAt: undefined,
-    }
-    const form = useForm<UserFormValues>({
-        resolver: zodResolver(userFormSchema),
-        defaultValues,
+    const form = useForm<CreateUserValues>({
+        resolver: zodResolver(createUserSchema),
+        defaultValues: {
+            color: "pink",
+            firstName: "",
+            secondName: "",
+            cpf: "",
+            occupation: "",
+            password: "",
+        },
         mode: "onChange",
     })
 
-    async function onSubmit(formData: UserFormValues) {
-        const parsedData = userFormSchema.parse(formData)
-        console.log("creating user")
-        await createUser(parsedData)
+    async function onSubmit(formData: CreateUserValues) {
+        await createUser(formData)
     }
     return (
         <Form {...form}>

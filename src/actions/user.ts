@@ -2,7 +2,8 @@
 
 import { db } from "@/db";
 import { usersSchema } from "@/db/schema";
-import { userFormSchema, UserFormValues } from "@/lib/zod/zod-user-schema";
+import { UpdateUserValues, userFormSchema, UserFormValues } from "@/lib/zod/zod-user-schema";
+import { logger } from "@/lib/logger";
 import {
   deleteFileFromBucket,
   storeFileUrl,
@@ -19,7 +20,7 @@ export async function getAllUsers() {
   try {
     return await db.select().from(usersSchema).orderBy(usersSchema.firstName);
   } catch (error) {
-    console.error("Error fetching users:", error);
+    logger.error("Error fetching users", error);
     throw new Error("Failed to fetch users");
   }
 }
@@ -52,19 +53,19 @@ export async function createUser(userData: UserFormValues) {
     };
   } catch (error) {
     if (error instanceof ZodError) {
-      console.error("Validation error:", error.errors);
+      logger.error("Validation error during user creation", error.errors);
       throw new Error(
         "Invalid user data: " + error.errors.map((e) => e.message).join(", ")
       );
     }
-    console.error("Error creating user:", error);
+    logger.error("Error creating user", error);
     throw new Error("Failed to create user");
   }
 }
 
 export async function updateUser(
   userId: number,
-  userData: Partial<UserFormValues>
+  userData: UpdateUserValues
 ) {
   try {
     const parsedData = userFormSchema.parse(userData);
@@ -74,7 +75,7 @@ export async function updateUser(
     });
 
     if (!oldUserData) {
-      console.error("User not found");
+      logger.error("User not found for update", { userId });
       throw new Error("User not found");
     }
 
@@ -127,12 +128,12 @@ export async function updateUser(
     };
   } catch (error) {
     if (error instanceof ZodError) {
-      console.error("Validation error:", error.errors);
+      logger.error("Validation error during user update", error.errors);
       throw new Error(
         "Invalid user data: " + error.errors.map((e) => e.message).join(", ")
       );
     }
-    console.error("Error updating user:", error);
+    logger.error("Error updating user", error);
     throw new Error("Failed to update user");
   }
 }
@@ -153,7 +154,7 @@ export async function deleteUser(userId: number) {
     });
 
     if (!userToDelete) {
-      console.log(`User not found`);
+      logger.info(`User not found for deletion`, { userId });
       revalidatePath("/");
       return {
         success: false,
@@ -175,8 +176,9 @@ export async function deleteUser(userId: number) {
       if (photoUrl.startsWith(baseUrl)) {
         objectKey = photoUrl.substring(baseUrl.length);
       } else {
-        console.warn(
-          `Url of file ${photoUrl} doesn't start with expected base url "${baseUrl}"`
+        logger.error(
+          `File URL doesn't match expected base URL`,
+          { photoUrl, baseUrl }
         );
       }
 
@@ -184,7 +186,7 @@ export async function deleteUser(userId: number) {
         try {
           await deleteFileFromBucket(objectKey);
         } catch (error) {
-          console.error(`Failed to deleted file ${objectKey}`, error);
+          logger.error(`Failed to delete file`, { objectKey, error });
           throw new Error(`Faild to remove file from storage`);
         }
       }
@@ -208,7 +210,7 @@ export async function deleteUser(userId: number) {
           : null,
     };
   } catch (error) {
-    console.error("Error deleting user:", error);
+    logger.error("Error deleting user", error);
     if (error instanceof Error) {
       throw new Error(error.message);
     }

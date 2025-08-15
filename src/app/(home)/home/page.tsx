@@ -14,7 +14,7 @@ export default async function HomePage() {
 
   return (
     <section className="space-y-5">
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center gap-3">
             <Calendar className="w-6 h-6 text-primary" />
@@ -82,8 +82,8 @@ export default async function HomePage() {
         </Card>
       </div>
       
-      <div className="grid grid-cols-2 h-96 gap-4">
-        <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="h-96">
           <CardHeader>
             <CardTitle>
               <div>Gráfico de Doações</div>
@@ -97,7 +97,7 @@ export default async function HomePage() {
             <Button>Ver mais</Button>
           </CardFooter>
         </Card>
-        <Card>
+        <Card className="h-96">
           <CardHeader>
             <CardTitle>
               <div>Atividade recente</div>
