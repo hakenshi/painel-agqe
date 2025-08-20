@@ -8,6 +8,7 @@ import {
   pgEnum,
   pgTable,
   serial,
+  text,
   time,
   timestamp,
   varchar,
@@ -107,3 +108,36 @@ export const imageEventsRelation = relations(eventImagesSchema, ({ one }) => ({
     references: [eventsSchema.id],
   }),
 }));
+
+export const projectTypeEnum = pgEnum("project_type", [
+  "social",
+  "educational",
+  "environmental",
+  "cultural",
+  "health",
+]);
+
+export const projectStatusEnum = pgEnum("project_status", [
+  "planning",
+  "active",
+  "completed",
+  "archived",
+]);
+
+export const projectsSchema = pgTable("projects", {
+  id: serial("id").primaryKey().notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  coverImage: varchar("cover_image").notNull(),
+  responsibles: text("responsibles"),
+  projectType: projectTypeEnum("project_type").notNull(),
+  slug: varchar("slug").notNull(),
+  markdown: varchar("markdown"),
+  latitude: varchar("latitude", { length: 20 }),
+  longitude: varchar("longitude", { length: 20 }),
+  status: projectStatusEnum("project_status").notNull(),
+  createAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});

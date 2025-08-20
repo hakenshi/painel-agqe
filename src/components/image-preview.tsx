@@ -43,6 +43,9 @@ export default function ImagePreview({ url }: { url?: string }) {
                         className="object-cover w-full h-full rounded-xl"
                         width={400}
                         height={400}
+                        onError={(e) => {
+                            e.currentTarget.src = '/placeholder.png';
+                        }}
                     />
                     <div className="absolute inset-0 bg-zinc-300/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl">
                         <PlusCircleIcon className="w-16 h-16 text-zinc-400" />

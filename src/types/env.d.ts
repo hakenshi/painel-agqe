@@ -13,13 +13,4 @@ declare namespace NodeJS {
     }
 }
 
-type EventData = {
-    name: string
-    type: "event" | "gallery" | "event_gallery"
-    location: string
-    date: string
-    starting_time: string
-    ending_time: string
-    coverImage?: string
-    markdown?: string
-}
+type EventData = Partial<typeof eventsSchema.$inferSelect>

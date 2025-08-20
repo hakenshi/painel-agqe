@@ -24,16 +24,22 @@ export default function CreateEventForm({eventData}: {eventData?: EventData}) {
         resolver: zodResolver(createEventSchema),
         defaultValues: {
             date: eventData?.date ? new Date(eventData.date) : undefined,
-            location: eventData?.location ?? "",
-            name: eventData?.name ?? "",
-            type: eventData?.type ?? "event",
-            ending_time: eventData?.ending_time ?? "",
-            starting_time: eventData?.starting_time ?? "",
+            location: eventData?.location?.replace(/[<>"'&]/g, '') ?? "",
+            name: eventData?.name?.replace(/[<>"'&]/g, '') ?? "",
+            type: eventData?.eventType ?? "event",
+            ending_time: eventData?.endingTime ?? "",
+            starting_time: eventData?.startingTime ?? "",
         },
     })
 
     async function submitEvent(values: CreateEventValues) {
-        sessionStorage.setItem('event_data', JSON.stringify(values))
+        // Sanitize values before storing
+        const sanitizedValues = {
+            ...values,
+            name: values.name?.replace(/[<>"'&]/g, ''),
+            location: values.location?.replace(/[<>"'&]/g, ''),
+        }
+        sessionStorage.setItem('event_data', JSON.stringify(sanitizedValues))
         router.push("/eventos/novo");
     }
 
@@ -47,7 +53,11 @@ export default function CreateEventForm({eventData}: {eventData?: EventData}) {
                         <FormItem>
                             <FormLabel>Nome</FormLabel>
                             <FormControl>
-                                <Input placeholder='Insira o nome do evento' {...field} />
+                                <Input 
+                                    placeholder='Insira o nome do evento' 
+                                    {...field}
+                                    onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -60,7 +70,11 @@ export default function CreateEventForm({eventData}: {eventData?: EventData}) {
                         <FormItem>
                             <FormLabel>Localização</FormLabel>
                             <FormControl>
-                                <Input placeholder='Insira a localização do evento' {...field} />
+                                <Input 
+                                    placeholder='Insira a localização do evento' 
+                                    {...field}
+                                    onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

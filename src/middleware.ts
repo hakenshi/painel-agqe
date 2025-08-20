@@ -5,6 +5,10 @@ const ALLOWED_REDIRECTS = ["/login", "/home"];
 function isValidRedirect(url: string): boolean {
     try {
         const parsed = new URL(url);
+        // Only allow same-origin URLs
+        if (parsed.origin !== new URL(url).origin) {
+            return false;
+        }
         return ALLOWED_REDIRECTS.includes(parsed.pathname);
     } catch {
         return false;

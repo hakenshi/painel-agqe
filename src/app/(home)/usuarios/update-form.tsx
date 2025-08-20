@@ -20,10 +20,10 @@ export default function UpdateUserForm({ data, id }: { data: Partial<typeof user
         resolver: zodResolver(updateUserSchema),
         defaultValues: {
             color: data?.color ?? "pink",
-            firstName: data?.firstName ?? "",
-            secondName: data?.secondName ?? "",
+            firstName: data?.firstName?.replace(/[<>"'&]/g, '') ?? "",
+            secondName: data?.secondName?.replace(/[<>"'&]/g, '') ?? "",
             cpf: data?.cpf ?? "",
-            occupation: data?.occupation ?? "",
+            occupation: data?.occupation?.replace(/[<>"'&]/g, '') ?? "",
             birthDate: data?.birthDate ? new Date(data.birthDate) : undefined,
             joinedAt: data?.joinedAt ? new Date(data.joinedAt) : undefined,
         },
@@ -56,7 +56,11 @@ export default function UpdateUserForm({ data, id }: { data: Partial<typeof user
                                 <FormItem>
                                     <FormLabel>Nome</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Insira um nome" {...field} />
+                                        <Input 
+                                            placeholder="Insira um nome" 
+                                            {...field}
+                                            onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -70,7 +74,11 @@ export default function UpdateUserForm({ data, id }: { data: Partial<typeof user
                                 <FormItem>
                                     <FormLabel>Sobrenome</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Insira um sobrenome" {...field} />
+                                        <Input 
+                                            placeholder="Insira um sobrenome" 
+                                            {...field}
+                                            onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -150,7 +158,11 @@ export default function UpdateUserForm({ data, id }: { data: Partial<typeof user
                                 <FormItem>
                                     <FormLabel>Ocupação</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Insira uma ocupação" {...field} />
+                                        <Input 
+                                            placeholder="Insira uma ocupação" 
+                                            {...field}
+                                            onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

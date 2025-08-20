@@ -1,9 +1,12 @@
 'use client'
 import { createEvent } from '@/actions/events'
+import EventUpdateForm from '@/app/(home)/eventos/update-form'
 import ImagePreview from '@/components/image-preview'
 import { AutosizeTextarea } from '@/components/ui/auto-resize-textarea'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { eventsSchema } from '@/db/schema'
+import { DialogTrigger } from '@radix-ui/react-dialog'
 import { ClockIcon, EyeIcon, InfoIcon, Link, MapIcon, MapPinIcon, PencilIcon, SaveIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
@@ -11,7 +14,6 @@ import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
-import { DialogTrigger } from '@radix-ui/react-dialog'
 
 export default function Evento({ eventData }: { eventData: EventData | null }) {
 
@@ -19,17 +21,24 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
 
     const [isEditing, setIsEditing] = useState(!eventData?.coverImage)
     const [markdown, setMarkdown] = useState(eventData?.markdown)
+    const [currentEvent, setCurrentEvent] = useState<EventData | null>(eventData)
+    
+    const updateEventData = (updates: Partial<EventData>) => {
+        setCurrentEvent((prev: EventData) => prev ? { ...prev, ...updates } : null)
+    }
 
     async function submit(e: FormEvent) {
         e.preventDefault()
         const formData = new FormData(e.target as HTMLFormElement)
 
-        if (!eventData) {
+        if (!currentEvent) {
             toast.error("Informações sobre o evento não estão presentes")
             return
         }
-        Object.entries(eventData).forEach(([key, value]) => {
-            formData.append(key, value as string)
+        Object.entries(currentEvent).forEach(([key, value]) => {
+            if (value != null) {
+                formData.append(key, String(value))
+            }
         })
         const event = await createEvent(formData)
 
@@ -44,7 +53,7 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
 
     return (
         <form onSubmit={submit} className="px-4 lg:px-6 relative">
-            {eventData ? (
+            {currentEvent ? (
                 <div className="flex flex-col lg:flex-row justify-center gap-6 lg:gap-10 items-start">
                     <div className="w-full lg:w-1/3 flex items-center flex-col justify-center lg:top-0 lg:sticky">
                         <div className='inline-flex flex-col text-start justify-start w-full lg:w-9/12'>
@@ -52,12 +61,12 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
                                 Próximo Evento
                             </p>
                             <h1 className="text-32l lg:text-3xl font-bold text-gray-800 mb-6 leading-tight">
-                                {eventData.name}
+                                {currentEvent.name}
                             </h1>
                         </div>
 
                         <div className="flex items-center justify-center w-full h-96">
-                            <ImagePreview url={eventData.coverImage} />
+                            <ImagePreview url={currentEvent.coverImage} />
                         </div>
                         <div className="mt-6 bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm space-y-2 w-full max-w-96">
                             <h3 className="text-lg font-semibold text-gray-700 mb-3">
@@ -65,39 +74,38 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
                             </h3>
                             <div className="flex items-center text-gray-600">
                                 <MapIcon className="w-5 mr-2 text-purple-600" />
-                                {new Date(eventData.date).toLocaleDateString("pt-BR", {
+                                {currentEvent.date ? new Date(currentEvent.date).toLocaleDateString("pt-BR", {
                                     weekday: "long",
                                     day: "numeric",
                                     month: "long",
                                     year: "numeric",
-                                })}
+                                }) : 'Data não definida'}
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <ClockIcon className="w-5 mr-2 text-purple-600" />
-                                {eventData.starting_time} - {eventData.ending_time}
+                                {currentEvent.startingTime} - {currentEvent.endingTime}
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <MapPinIcon className="w-5 mr-2 text-purple-600" />
-                                {eventData.location}
+                                {currentEvent.location}
                             </div>
                         </div>
                         <div className="mt-5 flex flex-col sm:flex-row gap-3 sm:space-x-3 text-center">
-                            {eventData.coverImage && eventData.markdown &&
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button>
-                                            <InfoIcon /> Editar Informações
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader>
-                                            <DialogTitle>
-                                                Editar Evento
-                                            </DialogTitle>
-                                        </DialogHeader>
-                                    </DialogContent>
-                                </Dialog>
-                            }
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button>
+                                        <InfoIcon /> Editar Informações
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            Editar Evento
+                                        </DialogTitle>
+                                    </DialogHeader>
+                                    <EventUpdateForm onUpdate={updateEventData} event={currentEvent as typeof eventsSchema.$inferSelect} />
+                                </DialogContent>
+                            </Dialog>
                             {!isEditing ?
                                 <Button type="button" onClick={() => setIsEditing(true)}> <PencilIcon /> Editar Markdown</Button> :
                                 <Button type="button" onClick={() => setIsEditing(false)}><EyeIcon /> Preview</Button>
@@ -113,7 +121,10 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
                     <div className="w-full lg:w-6/12">
                         <article className="space-y-5 prose prose-sm sm:prose-base max-w-none prose-p:text-gray-700 prose-p:leading-relaxed prose-strong:text-gray-800 overflow-y-scroll">
                             <input name="markdown" type="hidden" value={markdown} />
-                            {isEditing ? (<AutosizeTextarea value={markdown} onChange={(e) => setMarkdown(e.target.value)}></AutosizeTextarea>) : (
+                            {isEditing ? (<AutosizeTextarea value={markdown} onChange={(e) => {
+                                setMarkdown(e.target.value)
+                                updateEventData({ markdown: e.target.value })
+                            }}></AutosizeTextarea>) : (
                                 <Markdown
                                     skipHtml
                                     components={{

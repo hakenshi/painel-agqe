@@ -2,8 +2,8 @@
 
 import { db } from "@/db";
 import { eventsSchema } from "@/db/schema";
-import { eventsFormSchema } from "@/lib/zod/zod-events-schema";
-import { storeFileUrl } from "@/server/bucket";
+import { updateEventSchema, createEventSchema } from "@/lib/zod/zod-events-schema";
+import { storeFileUrl, updateFileInBucket } from "@/server/bucket";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -34,7 +34,7 @@ export async function createEvent(eventData: FormData) {
   const entries = Object.fromEntries(eventData);
   const { date, ...restEntries } = entries;
   const parsedDate = new Date(date as string);
-  const parsedValues = eventsFormSchema.parse({
+  const parsedValues = createEventSchema.parse({
     date: parsedDate,
     ...restEntries,
   });
@@ -96,6 +96,64 @@ export async function findEvent(eventId: number) {
   return await db.query.eventsSchema.findFirst({
     where: eq(eventsSchema.id, eventId),
   });
+}
+
+export async function updateEvent(eventId: number, eventData: FormData) {
+  const entries = Object.fromEntries(eventData);
+  const { date, ...restEntries } = entries;
+  
+  const parsedValues = updateEventSchema.parse({
+    date: date ? new Date(date as string) : undefined,
+    ...restEntries,
+  });
+
+  const existingEvent = await db.query.eventsSchema.findFirst({
+    where: eq(eventsSchema.id, eventId),
+  });
+
+  if (!existingEvent) {
+    return {
+      success: false,
+      message: "Evento não encontrado",
+    };
+  }
+
+  let coverImageUrl = existingEvent.coverImage;
+  
+  // Handle cover image update
+  if (parsedValues.cover_image) {
+    const updatedImageUrl = await updateFileInBucket(
+      existingEvent.coverImage,
+      parsedValues.cover_image,
+      BUCKET_FOLDER
+    );
+    if (updatedImageUrl) {
+      coverImageUrl = updatedImageUrl;
+    }
+  }
+
+  const updatedEvent = await db
+    .update(eventsSchema)
+    .set({
+      name: parsedValues.name ?? existingEvent.name,
+      eventType: parsedValues.type ?? existingEvent.eventType,
+      location: parsedValues.location ?? existingEvent.location,
+      date: parsedValues.date ? parsedValues.date.toISOString().slice(0, 10) : existingEvent.date,
+      startingTime: parsedValues.starting_time ?? existingEvent.startingTime,
+      endingTime: parsedValues.ending_time ?? existingEvent.endingTime,
+      markdown: parsedValues.markdown ?? existingEvent.markdown,
+      coverImage: coverImageUrl,
+      slug: parsedValues.name ? stringToSlug(parsedValues.name) : existingEvent.slug,
+    })
+    .where(eq(eventsSchema.id, eventId))
+    .returning();
+
+  revalidatePath("/eventos");
+  return {
+    success: true,
+    message: "Evento atualizado com sucesso",
+    event: updatedEvent[0],
+  };
 }
 
 export async function deleteEvent(eventId: number) {

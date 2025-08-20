@@ -1,4 +1,4 @@
-import { CalendarIcon, CircleDollarSignIcon, HandshakeIcon, LayoutDashboardIcon, UsersIcon } from 'lucide-react'
+import { CalendarIcon, CircleDollarSignIcon, FolderIcon, HandshakeIcon, LayoutDashboardIcon, UsersIcon } from 'lucide-react'
 import Link from 'next/link'
 import { buttonVariants } from './ui/button'
 
@@ -25,6 +25,11 @@ export default function Sidebar() {
                     <li className="flex-shrink-0 lg:w-full">
                         <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-center lg:justify-start gap-2 lg:gap-3 px-2 lg:px-4"} href={"/eventos"}>
                             <CalendarIcon className="w-5 h-5" /> <span className='font-medium hidden lg:inline'>Eventos</span>
+                        </Link>
+                    </li>
+                    <li className="flex-shrink-0 lg:w-full">
+                        <Link className={buttonVariants({ variant: "ghost" }) + " w-full inline-flex justify-center lg:justify-start gap-2 lg:gap-3 px-2 lg:px-4"} href={"/projetos"}>
+                            <FolderIcon className="w-5 h-5" /> <span className='font-medium hidden lg:inline'>Projetos</span>
                         </Link>
                     </li>
                     <li className="flex-shrink-0 lg:w-full">
