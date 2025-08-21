@@ -15,7 +15,7 @@ export default function NovoEvento() {
     }, [eventData])
 
     return (
-        <section className="py-10 bg-white">
+        <section className=" bg-white">
             {eventData?.type === "event" ? <Evento eventData={eventData} /> : <Galeria eventData={eventData} />}
         </section>
     )

@@ -29,7 +29,7 @@ export default function ImagePreview({ url }: { url?: string }) {
             <input
                 ref={fileRef}
                 type="file"
-                accept="image/png"
+                accept=".jpg, jpeg, .png"
                 className="hidden"
                 name='cover_image'
                 onChange={handleFileChange}

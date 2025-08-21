@@ -1,33 +1,17 @@
-import { findEvent } from "@/actions/events"
-import Evento from "@/components/evento"
-import Galeria from "@/components/galeria"
+import Projeto from "@/components/projeto"
+import { findProject } from "@/actions/projects"
 
 type Props = { params: Promise<{ id: string }> }
 
-export default async function EditarEventoPage({ params }: Props) {
+export default async function EditarProjetoPage({ params }: Props) {
   const { id } = await params
 
-  const event = await findEvent(parseInt(id))
-
-  if (!event) return null
-
-  const { eventType, startingTime, endingTime, markdown, ...rest } = event
-
-  const normalizedEvent = {
-    ...rest,
-    markdown: markdown ?? undefined,
-    eventType,
-    startingTime,
-    endingTime,
-  }
+  const project = await findProject(parseInt(id))
+  if (!project) return null
 
   return (
     <div>
-      {eventType === "event" ? (
-        <Evento eventData={normalizedEvent} />
-      ) : (
-        <Galeria eventData={normalizedEvent} />
-      )}
+      <Projeto projectData={project} />
     </div>
   )
 }

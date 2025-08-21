@@ -1,22 +1,21 @@
 'use client'
-import Evento from "@/components/evento"
-import Galeria from "@/components/galeria"
+import Projeto from "@/components/projeto"
 import { useEffect, useState } from "react"
 
-export default function NovoEvento() {
+export default function NovoProjeto() {
 
-    const [eventData, setEventData] = useState<EventData | null>(null)
+    const [projectData, setProjectData] = useState<any | null>(null)
 
     useEffect(() => {
-        if (!eventData) {
-            const eventTemporaryData = sessionStorage.getItem('event_data')
-            setEventData(eventTemporaryData ? JSON.parse(eventTemporaryData as string) : null)
+        if (!projectData) {
+            const projectTemporaryData = sessionStorage.getItem('project_data')
+            setProjectData(projectTemporaryData ? JSON.parse(projectTemporaryData as string) : null)
         }
-    }, [eventData])
-
+    }, [projectData])
+    
     return (
-        <section className="py-10 bg-white">
-            {eventData?.type === "event" ? <Evento eventData={eventData} /> : <Galeria eventData={eventData} />}
+        <section className="bg-white">
+            <Projeto projectData={projectData} />
         </section>
     )
 }

@@ -132,8 +132,10 @@ export const projectsSchema = pgTable("projects", {
   projectType: projectTypeEnum("project_type").notNull(),
   slug: varchar("slug").notNull(),
   markdown: varchar("markdown"),
-  latitude: varchar("latitude", { length: 20 }),
-  longitude: varchar("longitude", { length: 20 }),
+  location: varchar("location", { length: 255 }),
+  date: date("date"),
+  startingTime: time("starting_time"),
+  endingTime: time("ending_time"),
   status: projectStatusEnum("project_status").notNull(),
   createAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

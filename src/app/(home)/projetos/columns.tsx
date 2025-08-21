@@ -8,21 +8,9 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { toast } from "sonner";
 import Link from "next/link";
 
-// TODO: Definir tipo do projeto quando schema estiver pronto
-type Project = {
-  id: number;
-  name: string;
-  coverImage: string;
-  type: string;
-  status: string;
-  responsibles: string;
-  location?: string;
-  date?: string;
-  updatedAt: string;
-  slug: string;
-};
+import { projectsSchema } from "@/db/schema";
 
-export const projectColumns: ColumnDef<Project>[] = [
+export const projectColumns: ColumnDef<typeof projectsSchema.$inferSelect>[] = [
 	{
 		header: "",
 		accessorKey: "coverImage",
@@ -38,7 +26,7 @@ export const projectColumns: ColumnDef<Project>[] = [
 	},
 	{
 		header: "Tipo",
-		accessorKey: "type",
+		accessorKey: "projectType",
 	},
 	{
 		header: "Status",
@@ -91,7 +79,7 @@ export const projectColumns: ColumnDef<Project>[] = [
 		header: "",
 		accessorKey: "actions",
 		cell: ({ row }) => {
-			const { id, eventType, slug } = row.original;
+			const { id, slug } = row.original;
 
 			return (
 				<div className="space-x-3">

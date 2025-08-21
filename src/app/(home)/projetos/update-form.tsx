@@ -7,40 +7,53 @@ import { DialogClose } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { eventsSchema } from '@/db/schema'
-import { UpdateEventValues, updateEventSchema } from '@/lib/zod/zod-events-schema'
+import { projectsSchema } from '@/db/schema'
+import { UpdateProjectValues, updateProjectSchema } from '@/lib/zod/zod-projects-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
-const eventTypes = [
-    { type: "event", displayName: "Evento" },
-    { type: "gallery", displayName: "Galeria" },
-    { type: "event_gallery", displayName: "Evento e Galeria" }
+const projectTypes = [
+    { type: "social", displayName: "Social" },
+    { type: "educational", displayName: "Educacional" },
+    { type: "environmental", displayName: "Ambiental" },
+    { type: "cultural", displayName: "Cultural" },
+    { type: "health", displayName: "Saúde" }
 ]
 
-interface EventUpdateFormProps {
-    event: typeof eventsSchema.$inferSelect
-    onUpdate: (updates: Partial<EventData>) => void
+const projectStatus = [
+    { type: "planning", displayName: "Planejamento" },
+    { type: "active", displayName: "Ativo" },
+    { type: "completed", displayName: "Concluído" },
+    { type: "archived", displayName: "Arquivado" }
+]
+
+interface ProjectUpdateFormProps {
+    project: typeof projectsSchema.$inferSelect
+    onUpdate: (updates: Partial<any>) => void
 }
 
-export default function EventUpdateForm({ event, onUpdate }: EventUpdateFormProps) {
-    const form = useForm<UpdateEventValues>({
-        resolver: zodResolver(updateEventSchema),
+export default function ProjectUpdateForm({ project, onUpdate }: ProjectUpdateFormProps) {
+    const form = useForm<UpdateProjectValues>({
+        resolver: zodResolver(updateProjectSchema),
         defaultValues: {
-            name: event.name,
-            type: event.eventType,
-            location: event.location,
-            date: new Date(event.date),
-            starting_time: event.startingTime,
-            ending_time: event.endingTime,
-            markdown: event.markdown || "",
+            name: project.name,
+            type: project.projectType,
+            status: project.status,
+            responsibles: project.responsibles || "",
+            location: project.location || "",
+            date: project.date ? new Date(project.date) : undefined,
+            starting_time: project.startingTime || "",
+            ending_time: project.endingTime || "",
+            markdown: project.markdown || "",
         },
     })
 
-    async function onSubmit(values: UpdateEventValues) {
+    async function onSubmit(values: UpdateProjectValues) {
         onUpdate({
             name: values.name,
-            eventType: values.type as string,
+            projectType: values.type as any,
+            status: values.status as any,
+            responsibles: values.responsibles,
             location: values.location,
             date: values.date?.toISOString().slice(0, 10),
             startingTime: values.starting_time,
@@ -57,9 +70,23 @@ export default function EventUpdateForm({ event, onUpdate }: EventUpdateFormProp
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Nome do Evento</FormLabel>
+                                <FormLabel>Nome do Projeto</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Nome do evento" {...field} />
+                                    <Input placeholder="Nome do projeto" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="responsibles"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Responsáveis</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Ex: João Silva, Maria Santos" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -71,7 +98,7 @@ export default function EventUpdateForm({ event, onUpdate }: EventUpdateFormProp
                         name="type"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Tipo do Evento</FormLabel>
+                                <FormLabel>Tipo do Projeto</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl className='w-full'>
                                         <SelectTrigger>
@@ -79,7 +106,32 @@ export default function EventUpdateForm({ event, onUpdate }: EventUpdateFormProp
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {eventTypes.map(({ type, displayName }) => (
+                                        {projectTypes.map(({ type, displayName }) => (
+                                            <SelectItem key={type} value={type}>
+                                                {displayName}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="status"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Status do Projeto</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl className='w-full'>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Selecione o status" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {projectStatus.map(({ type, displayName }) => (
                                             <SelectItem key={type} value={type}>
                                                 {displayName}
                                             </SelectItem>
@@ -98,7 +150,7 @@ export default function EventUpdateForm({ event, onUpdate }: EventUpdateFormProp
                             <FormItem>
                                 <FormLabel>Localização</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Localização do evento" {...field} />
+                                    <Input placeholder="Localização do projeto" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -109,7 +161,7 @@ export default function EventUpdateForm({ event, onUpdate }: EventUpdateFormProp
                         control={form.control}
                         name="date"
                         render={({ field }) => (
-                            <DatePicker field={field} label="Data do Evento" />
+                            <DatePicker field={field} label="Data do Projeto (opcional)" />
                         )}
                     />
 
@@ -119,7 +171,7 @@ export default function EventUpdateForm({ event, onUpdate }: EventUpdateFormProp
                             name="starting_time"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Horário de Início</FormLabel>
+                                    <FormLabel>Horário de Início (opcional)</FormLabel>
                                     <FormControl>
                                         <TimePicker field={field} />
                                     </FormControl>
@@ -133,7 +185,7 @@ export default function EventUpdateForm({ event, onUpdate }: EventUpdateFormProp
                             name="ending_time"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Horário de Término</FormLabel>
+                                    <FormLabel>Horário de Término (opcional)</FormLabel>
                                     <FormControl>
                                         <TimePicker field={field} />
                                     </FormControl>
@@ -162,7 +214,6 @@ export default function EventUpdateForm({ event, onUpdate }: EventUpdateFormProp
                     />
 
                     <div className="flex justify-end gap-4">
-
                         <DialogClose asChild>
                             <Button type="submit">
                                 Salvar
