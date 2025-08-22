@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { usersSchema } from "@/db/schema"
 import { UpdateUserValues, colors, updateUserSchema } from "@/lib/zod/zod-user-schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Pencil } from "lucide-react"

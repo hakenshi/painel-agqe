@@ -13,4 +13,4 @@ declare namespace NodeJS {
     }
 }
 
-type EventData = Partial<typeof eventsSchema.$inferSelect>
+type EventData = Partial<Event>

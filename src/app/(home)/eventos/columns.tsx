@@ -2,7 +2,6 @@
 
 import TableIcon from "@/components/table-icon";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { eventsSchema } from "@/db/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { EyeIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
@@ -10,7 +9,7 @@ import { deleteEvent } from "@/actions/events";
 import { toast } from "sonner";
 import Link from "next/link";
 
-export const eventColumns: ColumnDef<typeof eventsSchema.$inferSelect>[] = [
+export const eventColumns: ColumnDef<Event>[] = [
 	{
 		header: "",
 		accessorKey: "coverImage",

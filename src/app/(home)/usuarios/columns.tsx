@@ -3,12 +3,11 @@
 import { deleteUser } from "@/actions/user"
 import DashboardTableActions from "@/components/dashboard/dashboard-table-actions"
 import TableIcon from "@/components/table-icon"
-import { usersSchema } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
 import UpdateUserForm from "./update-form"
 
 
-export const userColumns: ColumnDef<typeof usersSchema.$inferSelect>[] = [
+export const userColumns: ColumnDef<User>[] = [
     {
         header: "Foto",
         accessorKey: 'photo',

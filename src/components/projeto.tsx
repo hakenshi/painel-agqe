@@ -9,17 +9,16 @@ import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
 import ProjectUpdateForm from '@/app/(home)/projetos/update-form'
-import { projectsSchema } from '@/db/schema'
 import Link from 'next/link'
 import { TableBody, TableHeader, TableHead, TableRow, TableCell } from './ui/table'
 import { createProject, updateProject } from '@/actions/projects'
 
-export default function Projeto({ projectData }: { projectData: typeof projectsSchema.$inferSelect | null }) {
+export default function Projeto({ projectData }: { projectData: Project | null }) {
     const [isEditing, setIsEditing] = useState(!projectData?.coverImage)
     const [markdown, setMarkdown] = useState(projectData?.markdown)
-    const [currentProject, setCurrentProject] = useState<typeof projectsSchema.$inferSelect | null>(null)
+    const [currentProject, setCurrentProject] = useState<Project | null>(null)
 
-    const updateProjectData = (updates: Partial<typeof projectsSchema.$inferSelect>) => {
+    const updateProjectData = (updates: Partial<Project>) => {
         setCurrentProject((prev) => prev ? { ...prev, ...updates } : null)
     }
 
@@ -120,7 +119,7 @@ export default function Projeto({ projectData }: { projectData: typeof projectsS
                                             <DialogHeader>
                                                 <DialogTitle>Editar Projeto</DialogTitle>
                                             </DialogHeader>
-                                            <ProjectUpdateForm onUpdate={updateProjectData} project={currentProject as typeof projectsSchema.$inferSelect} />
+                                            <ProjectUpdateForm onUpdate={updateProjectData} project={currentProject as Project} />
                                         </DialogContent>
                                     </Dialog>
                                 )}
@@ -186,10 +185,9 @@ export default function Projeto({ projectData }: { projectData: typeof projectsS
                                 }
                             </div>
                             <article className="prose prose-sm sm:prose-base max-w-none prose-p:text-gray-700">
-                                <input name="markdown" type="hidden" value={markdown} />
                                 {isEditing ? (
                                     <AutosizeTextarea
-                                        value={markdown}
+                                        value={markdown as string}
                                         onChange={(e) => {
                                             setMarkdown(e.target.value)
                                             updateProjectData({ markdown: e.target.value })

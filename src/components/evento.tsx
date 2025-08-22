@@ -5,7 +5,6 @@ import ImagePreview from '@/components/image-preview'
 import { AutosizeTextarea } from '@/components/ui/auto-resize-textarea'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { eventsSchema } from '@/db/schema'
 import { DialogTrigger } from '@radix-ui/react-dialog'
 import { ClockIcon, EyeIcon, InfoIcon, Link, MapIcon, MapPinIcon, PencilIcon, SaveIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -103,7 +102,7 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
                                             Editar Evento
                                         </DialogTitle>
                                     </DialogHeader>
-                                    <EventUpdateForm onUpdate={updateEventData} event={currentEvent as typeof eventsSchema.$inferSelect} />
+                                    <EventUpdateForm onUpdate={updateEventData} event={currentEvent as Event} />
                                 </DialogContent>
                             </Dialog>
                             {!isEditing ?

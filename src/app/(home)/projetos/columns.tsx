@@ -8,9 +8,8 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { toast } from "sonner";
 import Link from "next/link";
 
-import { projectsSchema } from "@/db/schema";
 
-export const projectColumns: ColumnDef<typeof projectsSchema.$inferSelect>[] = [
+export const projectColumns: ColumnDef<Project>[] = [
 	{
 		header: "",
 		accessorKey: "coverImage",

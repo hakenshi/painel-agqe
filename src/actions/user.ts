@@ -1,220 +1,51 @@
 "use server";
 
-import { db } from "@/db";
-import { usersSchema } from "@/db/schema";
-import { UpdateUserValues, userFormSchema, UserFormValues } from "@/lib/zod/zod-user-schema";
-import { logger } from "@/lib/logger";
-import {
-  deleteFileFromBucket,
-  storeFileUrl,
-  updateFileInBucket,
-} from "@/server/bucket";
-import bcrypt from "bcrypt";
-import { eq } from "drizzle-orm";
+import { apiClient } from "@/lib/api";
 import { revalidatePath } from "next/cache";
-import { ZodError } from "zod";
-
-const BUCKET_FOLDER = "volunteer";
 
 export async function getAllUsers() {
-  try {
-    return await db.select().from(usersSchema).orderBy(usersSchema.firstName);
-  } catch (error) {
-    logger.error("Error fetching users", error);
-    throw new Error("Failed to fetch users");
-  }
+  return await apiClient.get('/users');
 }
 
-export async function createUser(userData: UserFormValues) {
+export async function createUser(userData: FormData) {
   try {
-    const parsedData = userFormSchema.parse(userData);
-
-    if (!parsedData.password) {
-      throw new Error("Password is required");
-    }
-
-    const hashedPassword = await bcrypt.hash(parsedData.password, 10);
-
-    const newUser = await db
-      .insert(usersSchema)
-      .values({
-        ...parsedData,
-        photo: await storeFileUrl(parsedData.photo, BUCKET_FOLDER),
-        birthDate: parsedData.birthDate.toISOString().slice(0, 10),
-        joinedAt: parsedData.joinedAt.toISOString().slice(0, 10),
-        password: hashedPassword,
-      })
-      .returning();
-
+    const response = await apiClient.post('/users', userData);
     revalidatePath("/usuarios");
     return {
       success: true,
-      userData: `${newUser[0].firstName} ${newUser[0].secondName}`,
+      userData: response.firstName + ' ' + response.secondName,
     };
   } catch (error) {
-    if (error instanceof ZodError) {
-      logger.error("Validation error during user creation", error.errors);
-      throw new Error(
-        "Invalid user data: " + error.errors.map((e) => e.message).join(", ")
-      );
-    }
-    logger.error("Error creating user", error);
-    throw new Error("Failed to create user");
+    throw new Error(error instanceof Error ? error.message : "Erro ao criar usuário");
   }
 }
 
-export async function updateUser(
-  userId: number,
-  userData: UpdateUserValues
-) {
+export async function updateUser(userId: number, userData: FormData) {
   try {
-    const parsedData = userFormSchema.parse(userData);
-
-    const oldUserData = await db.query.usersSchema.findFirst({
-      where: eq(usersSchema.id, userId),
-    });
-
-    if (!oldUserData) {
-      logger.error("User not found for update", { userId });
-      throw new Error("User not found");
-    }
-
-    const updateFields: Partial<typeof usersSchema.$inferInsert> = {
-      birthDate: parsedData.birthDate
-        ? parsedData.birthDate.toISOString().slice(0, 10)
-        : oldUserData.birthDate,
-      joinedAt: parsedData.joinedAt
-        ? parsedData.joinedAt.toISOString().slice(0, 10)
-        : oldUserData.joinedAt,
-    };
-    if (parsedData.password) {
-      updateFields.password = await bcrypt.hash(parsedData.password, 10);
-    } else {
-      updateFields.password = oldUserData.password;
-    }
-
-    if (oldUserData.photo) {
-      const updatedFileUrl = await updateFileInBucket(
-        oldUserData.photo,
-        parsedData.photo,
-        BUCKET_FOLDER
-      );
-      if (updatedFileUrl) {
-        updateFields.photo = updatedFileUrl;
-      }
-    } else if (parsedData.photo) {
-      const newFileUrl = await storeFileUrl(parsedData.photo, BUCKET_FOLDER);
-      if (newFileUrl) {
-        updateFields.photo = newFileUrl;
-      }
-    }
-    const updatedUser = await db
-      .update(usersSchema)
-      .set({
-        ...updateFields,
-        firstName: parsedData.firstName,
-        secondName: parsedData.secondName,
-        color: parsedData.color,
-        cpf: parsedData.cpf,
-        occupation: parsedData.occupation,
-      })
-      .where(eq(usersSchema.id, userId))
-      .returning();
-
+    const response = await apiClient.put(`/users/${userId}`, userData);
     revalidatePath("/usuarios");
     return {
       success: true,
-      userData: `${updatedUser[0].firstName} ${updatedUser[0].secondName}`,
+      userData: response.firstName + ' ' + response.secondName,
     };
   } catch (error) {
-    if (error instanceof ZodError) {
-      logger.error("Validation error during user update", error.errors);
-      throw new Error(
-        "Invalid user data: " + error.errors.map((e) => e.message).join(", ")
-      );
-    }
-    logger.error("Error updating user", error);
-    throw new Error("Failed to update user");
+    throw new Error(error instanceof Error ? error.message : "Erro ao atualizar usuário");
   }
 }
 
 export async function deleteUser(userId: number) {
   try {
-    if (!userId || typeof userId !== "number") {
-      throw new Error("Valid user ID is required");
-    }
-
-    const userToDelete = await db.query.usersSchema.findFirst({
-      where: eq(usersSchema.id, userId),
-      columns: {
-        photo: true,
-        firstName: true,
-        secondName: true,
-      },
-    });
-
-    if (!userToDelete) {
-      logger.info(`User not found for deletion`, { userId });
-      revalidatePath("/");
-      return {
-        success: false,
-        userData: null,
-        message: "Usuário não encontrado",
-      };
-    }
-
-    if (userToDelete.photo) {
-      const photoUrl = userToDelete.photo;
-      const r2PublicDOmain = process.env.NEXT_PUBLIC_CLOUDFLARE_R2_ENDPOINT;
-      if (!r2PublicDOmain) {
-        throw new Error("Bucket public url is undefined.");
-      }
-
-      const baseUrl = `${r2PublicDOmain}/`;
-      let objectKey = photoUrl;
-
-      if (photoUrl.startsWith(baseUrl)) {
-        objectKey = photoUrl.substring(baseUrl.length);
-      } else {
-        logger.error(
-          `File URL doesn't match expected base URL`,
-          { photoUrl, baseUrl }
-        );
-      }
-
-      if (objectKey) {
-        try {
-          await deleteFileFromBucket(objectKey);
-        } catch (error) {
-          logger.error(`Failed to delete file`, { objectKey, error });
-          throw new Error(`Faild to remove file from storage`);
-        }
-      }
-    }
-
-    const deletedUser = await db
-      .delete(usersSchema)
-      .where(eq(usersSchema.id, userId))
-      .returning({
-        firstName: usersSchema.firstName,
-        secondName: usersSchema.secondName,
-      });
-
+    const response = await apiClient.delete(`/users/${userId}`);
     revalidatePath("/usuarios");
-
     return {
       success: true,
-      userData:
-        deletedUser.length > 0
-          ? `${deletedUser[0].firstName} ${deletedUser[0].secondName}`
-          : null,
+      userData: response.firstName + ' ' + response.secondName,
     };
   } catch (error) {
-    logger.error("Error deleting user", error);
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-
-    throw new Error("Failed to delete user");
+    return {
+      success: false,
+      userData: null,
+      message: error instanceof Error ? error.message : "Erro ao excluir usuário",
+    };
   }
 }

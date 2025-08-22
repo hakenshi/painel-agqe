@@ -2,11 +2,10 @@
 
 // import { deleteSponsor } from "@/actions/sponsors"; // Descomente quando a action existir
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { sponsorsSchema } from "@/db/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { ImageIcon } from "lucide-react";
 
-export const sponsorColumns: ColumnDef<typeof sponsorsSchema.$inferSelect>[] = [
+export const sponsorColumns: ColumnDef<Sponsor>[] = [
     {
         header: "Logo",
         accessorKey: 'logo',

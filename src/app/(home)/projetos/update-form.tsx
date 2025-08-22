@@ -7,7 +7,6 @@ import { DialogClose } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { projectsSchema } from '@/db/schema'
 import { UpdateProjectValues, updateProjectSchema } from '@/lib/zod/zod-projects-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -28,7 +27,7 @@ const projectStatus = [
 ]
 
 interface ProjectUpdateFormProps {
-    project: typeof projectsSchema.$inferSelect
+    project: Project
     onUpdate: (updates: Partial<any>) => void
 }
 

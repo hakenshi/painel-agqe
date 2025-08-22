@@ -1,44 +1,64 @@
 'use server'
 
-import { eq } from "drizzle-orm";
-import bcrypt from "bcrypt";
-import { usersSchema } from "@/db/schema";
-import { getSession, saveSession } from "@/server/session";
-import jwt from "jsonwebtoken"
+import { apiClient } from "@/lib/api";
 import { redirect } from "next/navigation";
-import { db } from "@/db";
+import { cookies } from "next/headers";
 
-export const login = async (cpf: string, password: string) => {
-    const user = await db.select().from(usersSchema).where(eq(usersSchema.cpf, cpf)).limit(1);
-    if (!user.length) {
-        throw new Error("Usuário não encontrado");
-    }
-    const valid = await bcrypt.compare(password, user[0].password);
-
-    if (!valid) {
-        throw new Error("Senha inválida");
-    }
-    if (!process.env.JWT_SECRET) {
-        console.log(process.env.JWT_SECRET)
-        throw new Error('JWT_TOKEN environment variable is required')
-    }
-    const token = jwt.sign(user[0], process.env.JWT_SECRET)
-    
-    await saveSession(token)
-
-    const session = await getSession()
-
-    if (session.token) {
-        redirect("/home")
-    }
+interface LoginResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  user: {
+    id: number;
+    firstName: string;
+    secondName: string;
+    cpf: string;
+    occupation: string;
+    color: string;
+    photo?: string;
+    birthDate: string;
+    joinedAt: string;
+  };
 }
 
-export async function getAuthUser(): Promise<typeof usersSchema.$inferSelect> {
-    const { token } = await getSession()
-    const decodedToken = jwt.decode(token)
+export const login = async (cpf: string, password: string) => {
+  try {
+    const response = await apiClient.post<LoginResponse>('/login', {
+      cpf,
+      password,
+    });
 
-    if (!decodedToken || typeof decodedToken === "string") {
-        throw new Error("Token inválido ou ausente");
-    }
-    return decodedToken as typeof usersSchema.$inferSelect;
+    const cookieStore = await cookies();
+    cookieStore.set('auth-token', response.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: response.expires_in,
+    });
+
+    redirect("/home");
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : "Erro no login");
+  }
+};
+
+export async function getAuthUser() {
+  try {
+    return await apiClient.get('/me');
+  } catch (error) {
+    throw new Error("Token inválido ou ausente");
+  }
+}
+
+export async function logout() {
+  try {
+    await apiClient.post('/logout');
+    const cookieStore = await cookies();
+    cookieStore.delete('auth-token');
+    redirect("/login");
+  } catch (error) {
+    const cookieStore = await cookies();
+    cookieStore.delete('auth-token');
+    redirect("/login");
+  }
 }

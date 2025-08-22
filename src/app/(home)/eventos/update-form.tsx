@@ -7,7 +7,6 @@ import { DialogClose } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { eventsSchema } from '@/db/schema'
 import { UpdateEventValues, updateEventSchema } from '@/lib/zod/zod-events-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -19,7 +18,7 @@ const eventTypes = [
 ]
 
 interface EventUpdateFormProps {
-    event: typeof eventsSchema.$inferSelect
+    event: Event
     onUpdate: (updates: Partial<EventData>) => void
 }
 

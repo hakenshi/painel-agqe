@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button'
 import { useForm } from 'react-hook-form'
 import TimePicker from '@/components/time-picker'
 import { useRouter } from 'next/navigation'
-import { projectsSchema } from '@/db/schema'
 
 const projectTypes = [
     { type: "social", displayName: "Social" },
@@ -28,7 +27,7 @@ const projectStatus = [
     { type: "archived", displayName: "Arquivado" }
 ]
 
-export default function CreateProjectForm({projectData}: {projectData?: typeof projectsSchema.$inferSelect}) {
+export default function CreateProjectForm({projectData}: {projectData?: Project}) {
     const router = useRouter()
     const form = useForm<CreateProjectValues>({
         resolver: zodResolver(createProjectSchema),

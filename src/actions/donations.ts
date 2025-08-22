@@ -1,16 +1,9 @@
 'use server'
 
-import { db } from "@/db";
-import { donationsSchema } from "@/db/donations-schema";
-import { logger } from "@/lib/logger";
+import { apiClient } from "@/lib/api";
 
 export async function getAllDonations() {
-  try {
-    return await db.select().from(donationsSchema).orderBy(donationsSchema.createdAt);
-  } catch (error) {
-    logger.error("Error fetching donations", error);
-    throw new Error("Failed to fetch donations");
-  }
+  return await apiClient.get('/donations');
 }
 
 export async function createDonation(donationData: {
@@ -20,17 +13,12 @@ export async function createDonation(donationData: {
   message?: string;
 }) {
   try {
-    const newDonation = await db
-      .insert(donationsSchema)
-      .values(donationData)
-      .returning();
-    
+    const response = await apiClient.post('/donations', donationData);
     return {
       success: true,
-      donation: newDonation[0],
+      donation: response,
     };
   } catch (error) {
-    logger.error("Error creating donation", error);
-    throw new Error("Failed to create donation");
+    throw new Error(error instanceof Error ? error.message : "Erro ao criar doação");
   }
 }
