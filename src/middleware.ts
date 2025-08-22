@@ -2,11 +2,12 @@ import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
 
 const ALLOWED_REDIRECTS = ["/login", "/home"];
 
-function isValidRedirect(url: string): boolean {
+function isValidRedirect(url: string, baseUrl: string): boolean {
     try {
         const parsed = new URL(url);
+        const base = new URL(baseUrl);
         // Only allow same-origin URLs
-        if (parsed.origin !== new URL(url).origin) {
+        if (parsed.origin !== base.origin) {
             return false;
         }
         return ALLOWED_REDIRECTS.includes(parsed.pathname);
@@ -20,7 +21,7 @@ export function middleware(request: NextRequest) {
 
     if (!token) {
         const loginUrl = new URL("/login", request.url);
-        if (isValidRedirect(loginUrl.toString())) {
+        if (isValidRedirect(loginUrl.toString(), request.url)) {
             return NextResponse.redirect(loginUrl);
         }
     }
