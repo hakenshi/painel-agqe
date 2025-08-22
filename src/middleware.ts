@@ -27,7 +27,10 @@ export function middleware(request: NextRequest) {
     }
 
     if (request.nextUrl.pathname === "/" && token) {
-        return NextResponse.redirect(new URL("/home", request.url));
+        const homeUrl = new URL("/home", request.url);
+        if (isValidRedirect(homeUrl.toString(), request.url)) {
+            return NextResponse.redirect(homeUrl);
+        }
     }
     return NextResponse.next()
 }

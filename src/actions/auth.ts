@@ -45,7 +45,7 @@ export const login = async (cpf: string, password: string) => {
 export async function getAuthUser() {
   try {
     return await apiClient.get('/me');
-  } catch (error) {
+  } catch {
     throw new Error("Token inválido ou ausente");
   }
 }
@@ -56,7 +56,7 @@ export async function logout() {
     const cookieStore = await cookies();
     cookieStore.delete('auth-token');
     redirect("/login");
-  } catch (error) {
+  } catch {
     const cookieStore = await cookies();
     cookieStore.delete('auth-token');
     redirect("/login");

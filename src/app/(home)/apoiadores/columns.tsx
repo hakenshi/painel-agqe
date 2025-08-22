@@ -51,11 +51,11 @@ export const sponsorColumns: ColumnDef<Sponsor>[] = [
     {
         header: "",
         accessorKey: "actions",
-        cell: ({ row }) => {
-            const { id } = row.original;
+        // cell: ({ _ }) => {
+            // const { id } = row.original;
 
-            return (
-                "xd"
+            // return (
+                // "xd"
                 // <DashboardTableActions
                 //     updateForm={<UpdateSponsorForm sponsor={row.original} />} // Corrigido: passando a prop 'sponsor'
                 //     id={id}
@@ -65,7 +65,7 @@ export const sponsorColumns: ColumnDef<Sponsor>[] = [
                 //         // toast.info("Funcionalidade de deletar apoiador ainda não implementada.") // Removido toast daqui
                 //     }}
                 // />
-            );
+            // );
         }
-    }
+    // }
 ];

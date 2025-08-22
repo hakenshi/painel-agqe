@@ -10,8 +10,7 @@ interface ErrorBoundaryProps {
   message?: string
 }
 
-export function ErrorBoundary({ 
-  error, 
+export function ErrorBoundary({  
   reset, 
   title = "Erro no sistema",
   message = "Não foi possível carregar os dados. Tente novamente."

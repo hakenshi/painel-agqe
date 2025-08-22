@@ -43,7 +43,7 @@ export class ApiClient {
     return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<T> {
+  async post<T>(endpoint: string, data?: T): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data instanceof FormData ? data : JSON.stringify(data),
@@ -51,7 +51,7 @@ export class ApiClient {
     });
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<T> {
+  async put<T>(endpoint: string, data?: T): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: data instanceof FormData ? data : JSON.stringify(data),

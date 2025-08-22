@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 
 export default function NovoProjeto() {
 
-    const [projectData, setProjectData] = useState<any | null>(null)
+    const [projectData, setProjectData] = useState<Project | null>(null)
 
     useEffect(() => {
         if (!projectData) {

@@ -39,7 +39,9 @@ export default function CreateEventForm({eventData}: {eventData?: EventData}) {
             name: values.name?.replace(/[<>"'&]/g, ''),
             location: values.location?.replace(/[<>"'&]/g, ''),
         }
-        sessionStorage.setItem('event_data', JSON.stringify(sanitizedValues))
+        // Encode data to prevent XSS
+        const encodedData = btoa(JSON.stringify(sanitizedValues))
+        sessionStorage.setItem('event_data', encodedData)
         router.push("/eventos/novo");
     }
 
@@ -95,7 +97,16 @@ export default function CreateEventForm({eventData}: {eventData?: EventData}) {
                                 <SelectContent>
                                     {eventTypes.map(({ type, displayName }) => (
                                         <SelectItem key={type} value={type}>
-                                            {displayName}
+                                            {displayName.replace(/[<>"'&]/g, (match) => {
+                                                const entities: {[key: string]: string} = {
+                                                    '<': '&lt;',
+                                                    '>': '&gt;',
+                                                    '"': '&quot;',
+                                                    "'": '&#x27;',
+                                                    '&': '&amp;'
+                                                };
+                                                return entities[match] || match;
+                                            })}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

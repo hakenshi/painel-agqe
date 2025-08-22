@@ -28,7 +28,7 @@ const projectStatus = [
 
 interface ProjectUpdateFormProps {
     project: Project
-    onUpdate: (updates: Partial<any>) => void
+    onUpdate: (updates: Partial<Project>) => void
 }
 
 export default function ProjectUpdateForm({ project, onUpdate }: ProjectUpdateFormProps) {
@@ -50,8 +50,8 @@ export default function ProjectUpdateForm({ project, onUpdate }: ProjectUpdateFo
     async function onSubmit(values: UpdateProjectValues) {
         onUpdate({
             name: values.name,
-            projectType: values.type as any,
-            status: values.status as any,
+            projectType: values.type as typeof project.projectType,
+            status: values.status as typeof project.status,
             responsibles: values.responsibles,
             location: values.location,
             date: values.date?.toISOString().slice(0, 10),
