@@ -23,7 +23,7 @@ interface LoginResponse {
 
 export const login = async (cpf: string, password: string) => {
   try {
-    const response = await apiClient.post('/login', { cpf, password }) as LoginResponse;
+    const response = await apiClient.post('/login', { cpf, password }) as unknown as LoginResponse;
     
     const session = await getSession();
     session.access_token = response.access_token;
