@@ -3,7 +3,7 @@
 import { apiClient } from "@/lib/api";
 import { revalidatePath } from "next/cache";
 
-export async function getAllSponsors() {
+export async function getAllSponsors(): Promise<Sponsor[]> {
     return await apiClient.get('/sponsors');
 }
 
