@@ -94,9 +94,9 @@ export const eventColumns: ColumnDef<Event>[] = [
 							<DialogFooter>
 								<DialogClose className={buttonVariants({ variant: "outline" })}>Cancelar</DialogClose>
 								<Button variant="destructive" onClick={async () => {
-									const { message, success } = await deleteEvent(id)
-									if (success) {
-										toast(message)
+									const result = await deleteEvent(id)
+									if(result){
+										toast.success("Evento excluído com sucesso!")
 									}
 								}}>
 									Excluir

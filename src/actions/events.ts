@@ -29,7 +29,7 @@ export async function createEvent(data: FormData) {
   }
 }
 
-export async function deleteEvent(id: number) {
+export async function deleteEvent(id: number): Promise<Event> {
   try {
     return await apiClient.delete(`/events/${id}`);
   } catch (error) {

@@ -1,9 +1,9 @@
 import { getAllSponsors } from "@/actions/sponsors";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
 import DashboardShell from "@/components/dashboard/dashboard-shell";
+import DashboardTable from "@/components/dashboard/dashboard-table";
 import { UserPlusIcon } from "lucide-react";
 import { sponsorColumns } from "./columns";
-import DashboardTable from "@/components/dashboard/dashboard-table";
 
 export default async function ApoiadoresPage() {
   
