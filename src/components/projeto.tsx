@@ -52,12 +52,12 @@ export default function Projeto({ projectData }: { projectData: Project | null }
             }
 
             if (result.success) {
-                toast.success(result.message)
+                toast.success(result.message || "Projeto salvo com sucesso")
                 if (!currentProject.id && result.project) {
                     setCurrentProject(result.project)
                 }
             } else {
-                toast.error(result.message)
+                toast.error(result.message || "Erro ao salvar projeto")
             }
         } catch {
             toast.error("Erro ao salvar projeto")

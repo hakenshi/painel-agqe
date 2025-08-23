@@ -14,16 +14,16 @@ import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
 
-export default function Evento({ eventData }: { eventData: EventData | null }) {
+export default function Evento({ eventData }: { eventData: Partial<Event> | null }) {
 
     const router = useRouter()
 
     const [isEditing, setIsEditing] = useState(!eventData?.coverImage)
     const [markdown, setMarkdown] = useState(eventData?.markdown)
-    const [currentEvent, setCurrentEvent] = useState<EventData | null>(eventData)
+    const [currentEvent, setCurrentEvent] = useState<Partial<Event> | null>(eventData)
     
-    const updateEventData = (updates: Partial<EventData>) => {
-        setCurrentEvent((prev: EventData) => prev ? { ...prev, ...updates } : null)
+    const updateEventData = (updates: Partial<Event>) => {
+        setCurrentEvent((prev) => prev ? { ...prev, ...updates } : null)
     }
 
     async function submit(e: FormEvent) {
@@ -42,7 +42,7 @@ export default function Evento({ eventData }: { eventData: EventData | null }) {
         const event = await createEvent(formData)
 
         if (event.success) {
-            toast.success(event.message)
+            toast.success(event.message || "Evento criado com sucesso")
             sessionStorage.removeItem('event_data')
             router.push("/eventos")
         } else {

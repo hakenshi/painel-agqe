@@ -17,7 +17,7 @@ const loginSchema = z.object({
 });
 
 interface LoginFormProps {
-  loginFn(cpf: string, password: string): Promise<void>
+  loginFn(cpf: string, password: string): Promise<{ success: boolean; user?: User; message?: string }>
 }
 
 export default function LoginForm({ loginFn }: LoginFormProps) {
@@ -34,7 +34,11 @@ export default function LoginForm({ loginFn }: LoginFormProps) {
   })
 
   const submit = async (values: z.infer<typeof loginSchema>) => {
-    await loginFn(values.cpf, values.password)
+    const result = await loginFn(values.cpf, values.password)
+    if (!result.success && result.message) {
+      // Handle error if needed
+      console.error(result.message)
+    }
   }
 
   return (

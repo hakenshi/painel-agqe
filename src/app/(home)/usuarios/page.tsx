@@ -18,7 +18,7 @@ export default async function UsuariosPage() {
         action={<><UserPlusIcon /> Cadastrar Usuário</>}>
         <CreateUserForm />
       </DashboardHeader>
-      <DashboardTable filterColumns={['occupation']} columns={userColumns} data={users} />
+      <DashboardTable filterColumns={['occupation']} columns={userColumns} data={users as User[]} />
     </DashboardShell>
   )
 }

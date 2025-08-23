@@ -21,7 +21,7 @@ interface LoginResponse {
   };
 }
 
-export const login = async (cpf: string, password: string) => {
+export const login = async (cpf: string, password: string): Promise<{ success: boolean; user?: User; message?: string }> => {
   try {
     const response = await apiClient.post('/login', { cpf, password }) as unknown as LoginResponse;
     
@@ -33,7 +33,10 @@ export const login = async (cpf: string, password: string) => {
 
     redirect("/home");
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : "Erro no login");
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Erro no login"
+    };
   }
 };
 

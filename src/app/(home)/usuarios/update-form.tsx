@@ -18,7 +18,7 @@ export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: 
     const form = useForm<UpdateUserValues>({
         resolver: zodResolver(updateUserSchema),
         defaultValues: {
-            color: data?.color ?? "pink",
+            color: (data?.color as "pink") ?? "pink",
             firstName: data?.firstName?.replace(/[<>"'&]/g, '') ?? "",
             secondName: data?.secondName?.replace(/[<>"'&]/g, '') ?? "",
             cpf: data?.cpf ?? "",

@@ -8,14 +8,14 @@ import { CalendarPlus } from "lucide-react";
 
 export default async function EventosPage() {
 
-  const events = await getAllEvents(); // Ajuste para a action correta
+  const events = await getAllEvents();
 
   return (
     <DashboardShell>
       <DashboardHeader action={<><CalendarPlus /> Criar Evento</>} title="Eventos" description="Gerencie os eventos.">
         <CreateEventForm />
       </DashboardHeader>
-      <DashboardTable data={events} columns={eventColumns} filterColumns={['eventType']} />
+      <DashboardTable data={events as Event[]} columns={eventColumns} filterColumns={['eventType']} />
     </DashboardShell>
   );
 }

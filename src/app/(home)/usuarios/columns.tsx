@@ -12,7 +12,7 @@ export const userColumns: ColumnDef<User>[] = [
         header: "Foto",
         accessorKey: 'photo',
         cell: ({ row: { original: { photo } } }) => (
-            <TableIcon photo={photo} />
+            <TableIcon photo={photo ?? null} />
         )
     },
     {

@@ -6,8 +6,7 @@ type Props = { params: Promise<{ id: string }> }
 export default async function EditarProjetoPage({ params }: Props) {
   const { id } = await params
 
-  const project = await findProject(parseInt(id))
-  if (!project) return null
+  const project = await findProject(id)
 
   return (
     <div>

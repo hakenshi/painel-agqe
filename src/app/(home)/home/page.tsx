@@ -23,7 +23,7 @@ export default async function HomePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="font-medium text-xl">
-            {events?.length || 0}
+            {Array.isArray(events) ? events.length : 0}
           </CardContent>
           <CardFooter>
             <CardDescription>
@@ -39,7 +39,7 @@ export default async function HomePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="font-medium text-xl">
-            {users?.length || 0}
+            {Array.isArray(users) ? users.length : 0}
           </CardContent>
           <CardFooter>
             <CardDescription>

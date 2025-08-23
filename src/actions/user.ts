@@ -4,7 +4,7 @@ import { apiClient } from "@/lib/api";
 import { revalidatePath } from "next/cache";
 
 export async function getAllUsers() {
-  return await apiClient.get('/users');
+  return await apiClient.get<User[]>('/users');
 }
 
 export async function createUser(userData: FormData) {

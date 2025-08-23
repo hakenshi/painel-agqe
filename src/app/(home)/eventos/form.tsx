@@ -18,7 +18,7 @@ const eventTypes = [
     { type: "event_gallery", displayName: "Evento e Galeria" }
 ]
 
-export default function CreateEventForm({eventData}: {eventData?: EventData}) {
+export default function CreateEventForm({eventData}: {eventData?: Partial<Event>}) {
     const router = useRouter()
     const form = useForm<CreateEventValues>({
         resolver: zodResolver(createEventSchema),

@@ -2,7 +2,7 @@
 
 import { apiClient } from "@/lib/api";
 
-export async function findProject(id: string) {
+export async function findProject(id: string): Promise<Project | null> {
   try {
     return await apiClient.get(`/projects/${id}`);
   } catch (error) {
@@ -11,20 +11,36 @@ export async function findProject(id: string) {
   }
 }
 
-export async function createProject(data: FormData) {
+export async function createProject(data: FormData): Promise<{ success: boolean; project?: Project; message?: string }> {
   try {
-    return await apiClient.post('/projects', data);
+    const project = await apiClient.post('/projects', data) as unknown as Project;
+    return {
+      success: true,
+      project,
+      message: "Projeto criado com sucesso"
+    };
   } catch (error) {
     console.error("Error creating project:", error);
-    throw new Error('Falha ao criar projeto');
+    return {
+      success: false,
+      message: 'Falha ao criar projeto'
+    };
   }
 }
 
-export async function updateProject(id: string, data: FormData) {
+export async function updateProject(id: string, data: FormData): Promise<{ success: boolean; project?: Project; message?: string }> {
   try {
-    return await apiClient.put(`/projects/${id}`, data);
+    const project = await apiClient.put(`/projects/${id}`, data) as unknown as Project;
+    return {
+      success: true,
+      project,
+      message: "Projeto atualizado com sucesso"
+    };
   } catch (error) {
     console.error("Error updating project:", error);
-    throw new Error('Falha ao atualizar projeto');
+    return {
+      success: false,
+      message: 'Falha ao atualizar projeto'
+    };
   }
 }
