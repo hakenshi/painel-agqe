@@ -19,7 +19,7 @@ export async function createUser(userData: FormData) {
       joinedAt: userData.get('joinedAt') as string,
       password: userData.get('password') as string,
     };
-    const response = await apiClient.post('/users', formData);
+    const response = await apiClient.post<Partial<User>>('/users', formData);
     revalidatePath("/usuarios");
     return {
       success: true,
@@ -42,7 +42,7 @@ export async function updateUser(userId: number, userData: FormData) {
       joinedAt: userData.get('joinedAt') as string,
       password: userData.get('password') as string,
     };
-    const response = await apiClient.put(`/users/${userId}`, formData);
+    const response = await apiClient.put<Partial<User>>(`/users/${userId}`, formData);
     revalidatePath("/usuarios");
     return {
       success: true,
@@ -55,7 +55,7 @@ export async function updateUser(userId: number, userData: FormData) {
 
 export async function deleteUser(userId: number) {
   try {
-    const response = await apiClient.delete(`/users/${userId}`);
+    const response = await apiClient.delete(`/users/${userId}`) as User;
     revalidatePath("/usuarios");
     return {
       success: true,
