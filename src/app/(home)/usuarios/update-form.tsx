@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Pencil } from "lucide-react"
 import { useForm } from "react-hook-form"
 
-export default function UpdateUserForm({ data, id }: { data: Partial<typeof usersSchema.$inferInsert>, id: number }) {
+export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: number }) {
 
     const form = useForm<UpdateUserValues>({
         resolver: zodResolver(updateUserSchema),
@@ -30,7 +30,13 @@ export default function UpdateUserForm({ data, id }: { data: Partial<typeof user
     })
 
     async function onSubmit(formData: UpdateUserValues) {
-        await updateUser(id, formData)
+        const data = new FormData()
+        Object.entries(formData).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                data.append(key, value instanceof Date ? value.toISOString() : String(value))
+            }
+        })
+        await updateUser(id, data)
     }
 
 

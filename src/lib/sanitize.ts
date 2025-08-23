@@ -1,10 +1,9 @@
-import DOMPurify from 'isomorphic-dompurify';
-
 export function sanitizeHtml(dirty: string): string {
-  return DOMPurify.sanitize(dirty, {
-    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br'],
-    ALLOWED_ATTR: ['href']
-  });
+  return dirty
+    .replace(/<script[^>]*>.*?<\/script>/gi, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '');
 }
 
 export function sanitizeText(text: string): string {

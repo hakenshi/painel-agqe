@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { login, getAllUsers, createUser } from '@/actions/auth';
+import { login } from '@/actions/auth';
+import { getAllUsers, createUser } from '@/actions/users';
 
 // Mock environment
 vi.stubEnv('NEXT_PUBLIC_API_URL', 'http://localhost:8000/api');

@@ -1,62 +1,30 @@
 "use server";
 
 import { apiClient } from "@/lib/api";
-import { revalidatePath } from "next/cache";
 
-export async function getAllProjects() {
-  return await apiClient.get('/projects');
-}
-
-export async function getProjectById(id: number) {
-  return await apiClient.get(`/projects/${id}`);
-}
-
-export async function createProject(formData: FormData) {
+export async function findProject(id: string) {
   try {
-    const response = await apiClient.post('/projects', formData);
-    revalidatePath("/projetos");
-    return {
-      success: true,
-      message: "Projeto criado com sucesso",
-      project: response,
-    };
+    return await apiClient.get(`/projects/${id}`);
   } catch (error) {
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : "Erro ao criar projeto",
-    };
+    console.error("Error finding project:", error);
+    return null;
   }
 }
 
-export async function updateProject(id: number, formData: FormData) {
+export async function createProject(data: FormData) {
   try {
-    const response = await apiClient.put(`/projects/${id}`, formData);
-    revalidatePath("/projetos");
-    return {
-      success: true,
-      message: "Projeto atualizado com sucesso",
-      project: response,
-    };
+    return await apiClient.post('/projects', data);
   } catch (error) {
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : "Erro ao atualizar projeto",
-    };
+    console.error("Error creating project:", error);
+    throw new Error('Falha ao criar projeto');
   }
 }
 
-export async function deleteProject(id: number) {
+export async function updateProject(id: string, data: FormData) {
   try {
-    await apiClient.delete(`/projects/${id}`);
-    revalidatePath("/projetos");
-    return {
-      success: true,
-      message: "Projeto excluído com sucesso",
-    };
+    return await apiClient.put(`/projects/${id}`, data);
   } catch (error) {
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : "Erro ao excluir projeto",
-    };
+    console.error("Error updating project:", error);
+    throw new Error('Falha ao atualizar projeto');
   }
 }

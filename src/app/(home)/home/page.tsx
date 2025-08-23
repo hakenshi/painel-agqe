@@ -23,7 +23,7 @@ export default async function HomePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="font-medium text-xl">
-            {events.length}
+            {events?.length || 0}
           </CardContent>
           <CardFooter>
             <CardDescription>
@@ -39,7 +39,7 @@ export default async function HomePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="font-medium text-xl">
-            {users.length}
+            {users?.length || 0}
           </CardContent>
           <CardFooter>
             <CardDescription>
@@ -72,7 +72,7 @@ export default async function HomePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="font-medium text-xl">
-            {sponsors.length}
+            {sponsors?.length || 0}
           </CardContent>
           <CardFooter>
             <CardDescription>

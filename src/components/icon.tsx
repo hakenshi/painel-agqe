@@ -9,7 +9,7 @@ export default async function Icon() {
 
     return (
         <Avatar className='size-12'>
-            <AvatarImage className='object-cover' src={user.photo ? user.photo : ""} />
+            <AvatarImage className='object-cover' src={(user as User)?.photo || ""} />
             <AvatarFallback>
                 <div className='bg-zinc-300 rounded-full p-3'>
                     <UserIcon />

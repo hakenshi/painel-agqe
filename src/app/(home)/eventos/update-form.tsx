@@ -39,7 +39,7 @@ export default function EventUpdateForm({ event, onUpdate }: EventUpdateFormProp
     async function onSubmit(values: UpdateEventValues) {
         onUpdate({
             name: values.name,
-            eventType: values.type as string,
+            eventType: values.type as 'event' | 'gallery' | 'event_gallery',
             location: values.location,
             date: values.date?.toISOString().slice(0, 10),
             startingTime: values.starting_time,

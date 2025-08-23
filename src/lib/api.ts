@@ -8,9 +8,13 @@ export class ApiClient {
   }
 
   private async getAuthToken(): Promise<string | null> {
-    const { cookies } = await import('next/headers');
-    const cookieStore = await cookies();
-    return cookieStore.get('auth-token')?.value || null;
+    try {
+      const { getSession } = await import('@/lib/session');
+      const session = await getSession();
+      return session.access_token || null;
+    } catch {
+      return null;
+    }
   }
 
   private async request<T>(

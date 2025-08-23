@@ -2,7 +2,7 @@
 
 import { apiClient } from "@/lib/api";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/session";
 
 interface LoginResponse {
   access_token: string;
@@ -23,18 +23,13 @@ interface LoginResponse {
 
 export const login = async (cpf: string, password: string) => {
   try {
-    const response = await apiClient.post<LoginResponse>('/login', {
-      cpf,
-      password,
-    });
-
-    const cookieStore = await cookies();
-    cookieStore.set('auth-token', response.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: response.expires_in,
-    });
+    const response = await apiClient.post('/login', { cpf, password }) as LoginResponse;
+    
+    const session = await getSession();
+    session.access_token = response.access_token;
+    session.user = response.user;
+    session.isLoggedIn = true;
+    await session.save();
 
     redirect("/home");
   } catch (error) {
@@ -43,22 +38,31 @@ export const login = async (cpf: string, password: string) => {
 };
 
 export async function getAuthUser() {
+  const session = await getSession();
+  
+  if (!session.isLoggedIn || !session.access_token) {
+    throw new Error("Token inválido ou ausente");
+  }
+  
   try {
     return await apiClient.get('/me');
   } catch {
+    await logout();
     throw new Error("Token inválido ou ausente");
   }
 }
 
 export async function logout() {
+  const session = await getSession();
+  
   try {
-    await apiClient.post('/logout');
-    const cookieStore = await cookies();
-    cookieStore.delete('auth-token');
-    redirect("/login");
+    if (session.access_token) {
+      await apiClient.post('/logout');
+    }
   } catch {
-    const cookieStore = await cookies();
-    cookieStore.delete('auth-token');
+    // Ignora erro da API
+  } finally {
+    session.destroy();
     redirect("/login");
   }
 }

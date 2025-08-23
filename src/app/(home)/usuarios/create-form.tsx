@@ -26,7 +26,13 @@ export default function CreateUserForm() {
     })
 
     async function onSubmit(formData: CreateUserValues) {
-        await createUser(formData)
+        const data = new FormData()
+        Object.entries(formData).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                data.append(key, value instanceof Date ? value.toISOString() : String(value))
+            }
+        })
+        await createUser(data)
     }
     return (
         <Form {...form}>

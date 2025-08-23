@@ -9,7 +9,17 @@ export async function getAllUsers() {
 
 export async function createUser(userData: FormData) {
   try {
-    const response = await apiClient.post('/users', userData);
+    const formData = {
+      firstName: userData.get('firstName') as string,
+      secondName: userData.get('secondName') as string,
+      cpf: userData.get('cpf') as string,
+      occupation: userData.get('occupation') as string,
+      color: userData.get('color') as string,
+      birthDate: userData.get('birthDate') as string,
+      joinedAt: userData.get('joinedAt') as string,
+      password: userData.get('password') as string,
+    };
+    const response = await apiClient.post('/users', formData);
     revalidatePath("/usuarios");
     return {
       success: true,
@@ -22,7 +32,17 @@ export async function createUser(userData: FormData) {
 
 export async function updateUser(userId: number, userData: FormData) {
   try {
-    const response = await apiClient.put(`/users/${userId}`, userData);
+    const formData = {
+      firstName: userData.get('firstName') as string,
+      secondName: userData.get('secondName') as string,
+      cpf: userData.get('cpf') as string,
+      occupation: userData.get('occupation') as string,
+      color: userData.get('color') as string,
+      birthDate: userData.get('birthDate') as string,
+      joinedAt: userData.get('joinedAt') as string,
+      password: userData.get('password') as string,
+    };
+    const response = await apiClient.put(`/users/${userId}`, formData);
     revalidatePath("/usuarios");
     return {
       success: true,

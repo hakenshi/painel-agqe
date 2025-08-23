@@ -46,7 +46,7 @@ export default function Projeto({ projectData }: { projectData: Project | null }
         try {
             let result
             if (currentProject.id) {
-                result = await updateProject(currentProject.id, formData)
+                result = await updateProject(String(currentProject.id), formData)
             } else {
                 result = await createProject(formData)
             }
@@ -90,7 +90,7 @@ export default function Projeto({ projectData }: { projectData: Project | null }
 
                             <div className="flex-1">
                                 <p className="text-sm uppercase text-pink-600 font-semibold mb-2">
-                                    Projeto {typeMap[currentProject.type as keyof typeof typeMap] || currentProject.type}
+                                    Projeto {typeMap[currentProject.projectType as keyof typeof typeMap] || currentProject.projectType}
                                 </p>
                                 <h1 className="text-2xl lg:text-4xl font-bold text-gray-800 mb-4">
                                     {currentProject.name}
