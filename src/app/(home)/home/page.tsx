@@ -2,7 +2,7 @@ import { getAllEvents } from "@/actions/events";
 import { getAllSponsors } from "@/actions/sponsors";
 import { getAllUsers } from "@/actions/user";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, HandHeart, Handshake, Users } from "lucide-react";
 
@@ -25,11 +25,6 @@ export default async function HomePage() {
           <CardContent className="font-medium text-xl">
             {Array.isArray(events) ? events.length : 0}
           </CardContent>
-          <CardFooter>
-            <CardDescription>
-              XD
-            </CardDescription>
-          </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center gap-3">
@@ -41,11 +36,6 @@ export default async function HomePage() {
           <CardContent className="font-medium text-xl">
             {Array.isArray(users) ? users.length : 0}
           </CardContent>
-          <CardFooter>
-            <CardDescription>
-              XD
-            </CardDescription>
-          </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center gap-3">
@@ -58,11 +48,6 @@ export default async function HomePage() {
             {/* Substitua pelo valor real de doações se disponível */}
             0
           </CardContent>
-          <CardFooter>
-            <CardDescription>
-              XD
-            </CardDescription>
-          </CardFooter>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center gap-3">
@@ -74,11 +59,6 @@ export default async function HomePage() {
           <CardContent className="font-medium text-xl">
             {sponsors?.length || 0}
           </CardContent>
-          <CardFooter>
-            <CardDescription>
-              XD
-            </CardDescription>
-          </CardFooter>
         </Card>
       </div>
       

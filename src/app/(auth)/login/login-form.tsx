@@ -55,7 +55,7 @@ export default function LoginForm({ loginFn }: LoginFormProps) {
           boxShadow: "0px 0px 30px rgba(0,0,0,0.25)"
         }} onSubmit={form.handleSubmit(submit)}>
           <div className="flex flex-col items-center gap-5">
-            <Image src={`${getFileURL('icons/icon-transparent.png')}`} alt="logo associação e grupo quatro estações" width={400} height={300} className="w-42"/>
+            <Image src={`${getFileURL('icons/icon-transparent.png')}`} alt="logo associação e grupo quatro estações" width={400} height={300} className="w-42" />
             <h1 className="font-bold text-pink-700 text-center text-sm sm:text-base">Painel Associação e Grupo 4 estações</h1>
           </div>
           <div className="space-y-7 w-full">
@@ -86,7 +86,9 @@ export default function LoginForm({ loginFn }: LoginFormProps) {
               )}
             />
           </div>
-          <Button disabled={form.formState.isSubmitting} className="font-bold px-8" type="submit">Enviar</Button>
+          <Button disabled={form.formState.isSubmitting} className="font-bold px-8" type="submit">
+              {form.formState.isSubmitting ? "Entrando..." : "Entrar"}
+          </Button>
         </form>
       </Form>
     </section>

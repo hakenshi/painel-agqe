@@ -4,7 +4,7 @@ import { updateUser } from "@/actions/user"
 import InputCPF from "@/components/input-cpf"
 import DatePicker from "@/components/date-picker"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -200,9 +200,11 @@ export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: 
                                 <DatePicker field={field} label='Data de Admissão' />
                             )}
                         />
-                        <Button className="w-full" type="submit">
-                            Atualizar
-                        </Button>
+                        <DialogClose asChild>
+                            <Button className="w-full" type="submit">
+                                Atualizar
+                            </Button>
+                        </DialogClose>
                     </form>
                 </Form>
             </DialogContent>
