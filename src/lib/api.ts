@@ -55,8 +55,8 @@ export class ApiClient {
     });
   }
 
-  async put<T>(endpoint: string, data?: T): Promise<T> {
-    return this.request<T>(endpoint, {
+  async put<T, J = T>(endpoint: string, data?: T): Promise<J> {
+    return this.request<J>(endpoint, {
       method: 'PUT',
       body: data instanceof FormData ? data : JSON.stringify(data),
       headers: data instanceof FormData ? {} : { 'Content-Type': 'application/json' },

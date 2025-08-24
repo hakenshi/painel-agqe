@@ -31,7 +31,7 @@ export async function createUser(userData: FormData) {
       throw new Error(`Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`);
     }
 
-    const response = await apiClient.post<CreateUserValues>('/users', parsedValues.data);
+    const response = await apiClient.post<CreateUserValues, User>('/users', parsedValues.data);
     revalidatePath("/usuarios");
     return {
       success: true,
@@ -51,7 +51,7 @@ export async function updateUser(userId: number, userData: FormData) {
       throw new Error(`Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`);
     }
 
-    const response = await apiClient.put<UpdateUserValues>(`/users/${userId}`, parsedValues.data);
+    const response = await apiClient.put<UpdateUserValues, User>(`/users/${userId}`, parsedValues.data);
     revalidatePath("/usuarios");
     return {
       success: true,

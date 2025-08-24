@@ -35,7 +35,7 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
             date: projectData?.date ? new Date(projectData.date) : undefined,
             location: projectData?.location?.replace(/[<>"'&]/g, '') ?? "",
             name: projectData?.name?.replace(/[<>"'&]/g, '') ?? "",
-            type: projectData?.projectType ?? "social",
+            projectType: projectData?.projectType ?? "social",
             status: projectData?.status ?? "planning",
             responsibles: projectData?.responsibles?.replace(/[<>"'&]/g, '') ?? "",
             ending_time: projectData?.endingTime ?? "",
@@ -58,7 +58,7 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
     return (
         <Form {...form}>
             <form className='space-y-6' onSubmit={form.handleSubmit(submitProject)}>
-                <FormField
+                <FormField<CreateProjectValues>
                     control={form.control}
                     name='name'
                     render={({ field }) => (
@@ -67,7 +67,7 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
                             <FormControl>
                                 <Input 
                                     placeholder='Insira o nome do projeto' 
-                                    {...field}
+                                    value={field.value as string || ''}
                                     onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
                                 />
                             </FormControl>
@@ -75,7 +75,7 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
                         </FormItem>
                     )}
                 />
-                <FormField
+                <FormField<CreateProjectValues>
                     control={form.control}
                     name='location'
                     render={({ field }) => (
@@ -84,7 +84,7 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
                             <FormControl>
                                 <Input 
                                     placeholder='Insira a localização do evento' 
-                                    {...field}
+                                    value={field.value as string || ''}
                                     onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
                                 />
                             </FormControl>
@@ -92,7 +92,7 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
                         </FormItem>
                     )}
                 />
-                <FormField
+                <FormField<CreateProjectValues>
                     control={form.control}
                     name='responsibles'
                     render={({ field }) => (
@@ -101,7 +101,7 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
                             <FormControl>
                                 <Input 
                                     placeholder='Ex: João Silva, Maria Santos, Instituto XYZ' 
-                                    {...field}
+                                    value={field.value as string || ''}
                                     onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
                                 />
                             </FormControl>
@@ -109,13 +109,13 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
                         </FormItem>
                     )}
                 />
-                <FormField
+                <FormField<CreateProjectValues>
                     control={form.control}
-                    name='type'
+                    name='projectType'
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Tipo do Projeto</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value as string || undefined}>
                                 <FormControl className='w-full'>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Selecione o tipo do projeto" />
@@ -133,13 +133,13 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
                         </FormItem>
                     )}
                 />
-                <FormField
+                <FormField<CreateProjectValues>
                     control={form.control}
                     name='status'
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Status do Projeto</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value as string || undefined}>
                                 <FormControl className='w-full'>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Selecione o status" />
@@ -157,7 +157,7 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
                         </FormItem>
                     )}
                 />
-                <FormField
+                <FormField<CreateProjectValues>
                     control={form.control}
                     name='date'
                     render={({ field }) => (
@@ -165,7 +165,7 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
                     )}
                 />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField
+                    <FormField<CreateProjectValues>
                         control={form.control}
                         name='starting_time'
                         render={({ field }) => (
@@ -176,7 +176,7 @@ export default function CreateProjectForm({projectData}: {projectData?: Project}
                             </FormItem>
                         )}
                     />
-                    <FormField
+                    <FormField<CreateProjectValues>
                         control={form.control}
                         name='ending_time'
                         render={({ field }) => (
