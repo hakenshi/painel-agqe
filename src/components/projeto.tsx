@@ -1,19 +1,20 @@
 'use client'
+import { createProject, updateProject } from '@/actions/projects'
+import ProjectUpdateForm from '@/app/(home)/projetos/update-form'
 import ImagePreview from '@/components/image-preview'
 import { AutosizeTextarea } from '@/components/ui/auto-resize-textarea'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { ClockIcon, EyeIcon, InfoIcon, MapIcon, MapPinIcon, PencilIcon, SaveIcon, Table, UsersIcon } from 'lucide-react'
-import { FormEvent, useEffect, useState } from 'react'
+import { ClockIcon, EyeIcon, MapIcon, MapPinIcon, PencilIcon, SaveIcon, Table, UsersIcon } from 'lucide-react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
-import ProjectUpdateForm from '@/app/(home)/projetos/update-form'
-import Link from 'next/link'
-import { TableBody, TableHeader, TableHead, TableRow, TableCell } from './ui/table'
-import { createProject, updateProject } from '@/actions/projects'
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
+import { useRouter } from 'next/navigation'
 
 export default function Projeto({ projectData }: { projectData: Project | null }) {
+    const router = useRouter()
     const [isEditing, setIsEditing] = useState(!projectData?.coverImage)
     const [markdown, setMarkdown] = useState(projectData?.markdown)
     const [currentProject, setCurrentProject] = useState<Project | null>(null)
@@ -28,9 +29,8 @@ export default function Projeto({ projectData }: { projectData: Project | null }
         }
     }, [projectData])
 
-    async function submit(e: FormEvent) {
-        e.preventDefault()
-        const formData = new FormData(e.target as HTMLFormElement)
+    async function submit() {
+        const formData = new FormData()
 
         if (!currentProject) {
             toast.error("Informações sobre o projeto não estão presentes")
@@ -47,14 +47,17 @@ export default function Projeto({ projectData }: { projectData: Project | null }
             let result
             if (currentProject.id) {
                 result = await updateProject(String(currentProject.id), formData)
+                console.log("updateProject result:", result)
             } else {
                 result = await createProject(formData)
+                console.log("createProject result:", result)
             }
 
             if (result.success) {
                 toast.success(result.message || "Projeto salvo com sucesso")
-                if (!currentProject.id && result.project) {
+                if (result.project) {
                     setCurrentProject(result.project)
+                    router.push("/projetos")
                 }
             } else {
                 toast.error(result.message || "Erro ao salvar projeto")
@@ -79,10 +82,8 @@ export default function Projeto({ projectData }: { projectData: Project | null }
         health: "Saúde"
     }
 
-    console.log(projectData)
-
     return (
-        <form onSubmit={submit} className="px-4 lg:px-6 relative">
+        <div className="px-4 lg:px-6 relative">
             {currentProject ? (
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     <div className="lg:col-span-4 bg-gradient-to-r from-pink-50 to-pink-100 p-6 rounded-xl border border-pink-200">
@@ -109,21 +110,9 @@ export default function Projeto({ projectData }: { projectData: Project | null }
                             </div>
                             <div className="flex gap-2">
                                 {currentProject.id && (
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button variant="outline" className="border-pink-600 text-pink-600 hover:bg-pink-50">
-                                                <InfoIcon /> Editar
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                                            <DialogHeader>
-                                                <DialogTitle>Editar Projeto</DialogTitle>
-                                            </DialogHeader>
-                                            <ProjectUpdateForm onUpdate={updateProjectData} project={currentProject as Project} />
-                                        </DialogContent>
-                                    </Dialog>
+                                    <ProjectUpdateForm onUpdate={updateProjectData} project={currentProject as Project} />
                                 )}
-                                <Button className="bg-pink-600 hover:bg-pink-700">
+                                <Button type='button' onClick={submit} className="bg-pink-600 hover:bg-pink-700">
                                     <SaveIcon /> Salvar
                                 </Button>
                             </div>
@@ -136,7 +125,7 @@ export default function Projeto({ projectData }: { projectData: Project | null }
                             <div className="flex items-center justify-center w-full h-96">
                                 <ImagePreview url={currentProject.coverImage} />
                             </div>
-                            {currentProject.location || currentProject.date || currentProject.startingTime && currentProject.endingTime && <h3 className="font-semibold text-gray-800 mb-3">Detalhes</h3>}
+                            {(currentProject.location || currentProject.date || currentProject.startingTime && currentProject.endingTime) && <h3 className="font-semibold text-gray-800 my-3">Detalhes</h3>}
                             <div className="space-y-3 text-sm">
                                 {currentProject.location && (
                                     <div className="flex items-start">
@@ -252,6 +241,6 @@ export default function Projeto({ projectData }: { projectData: Project | null }
                     </h2>
                 </div>
             )}
-        </form>
+        </div>
     )
 }

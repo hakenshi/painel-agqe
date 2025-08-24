@@ -9,9 +9,9 @@ export class ApiClient {
 
   private async getAuthToken(): Promise<string | null> {
     try {
-      const { getSession } = await import('@/lib/session');
+      const { getSession } = await import('@/server/session');
       const session = await getSession();
-      return session.access_token || null;
+      return session.token || null;
     } catch {
       return null;
     }
@@ -39,16 +39,16 @@ export class ApiClient {
       const error = await response.text();
       throw new Error(`API Error: ${response.status} - ${error}`);
     }
-
-    return response.json();
+    const responseData = await response.json();
+    return responseData.data || responseData;
   }
 
   async get<T>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  async post<T>(endpoint: string, data?: T): Promise<T> {
-    return this.request<T>(endpoint, {
+  async post<T, J>(endpoint: string, data?: T): Promise<J> {
+    return this.request<J>(endpoint, {
       method: 'POST',
       body: data instanceof FormData ? data : JSON.stringify(data),
       headers: data instanceof FormData ? {} : { 'Content-Type': 'application/json' },

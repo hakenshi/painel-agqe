@@ -4,10 +4,11 @@ import DashboardTable from "@/components/dashboard/dashboard-table";
 import { projectColumns } from "./columns";
 import CreateProjectForm from "./form";
 import { FolderPlus } from "lucide-react";
+import { getAllProjects } from "@/actions/projects";
 
 export default async function ProjetosPage() {
   // TODO: Implementar getAllProjects quando a action estiver pronta
-  const projects: Project[] = [];
+  const projects: Project[] = await getAllProjects();
 
   return (
     <DashboardShell>

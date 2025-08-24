@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { getFileURL } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -22,6 +24,8 @@ interface LoginFormProps {
 
 export default function LoginForm({ loginFn }: LoginFormProps) {
 
+  const router = useRouter()
+
   const form = useForm<{
     cpf: string;
     password: string;
@@ -35,10 +39,13 @@ export default function LoginForm({ loginFn }: LoginFormProps) {
 
   const submit = async (values: z.infer<typeof loginSchema>) => {
     const result = await loginFn(values.cpf, values.password)
+
     if (!result.success && result.message) {
-      // Handle error if needed
-      console.error(result.message)
+      toast.error(result.message)
+      return
     }
+
+    router.push("/home");
   }
 
   return (

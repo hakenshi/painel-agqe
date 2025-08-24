@@ -7,6 +7,8 @@ import { EyeIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import Link from "next/link";
+import { apiClient } from "@/lib/api";
+import { deleteProject } from "@/actions/projects";
 
 
 export const projectColumns: ColumnDef<Project>[] = [
@@ -78,14 +80,14 @@ export const projectColumns: ColumnDef<Project>[] = [
 		header: "",
 		accessorKey: "actions",
 		cell: ({ row }) => {
-			const { id, slug } = row.original;
+			const { slug, id } = row.original;
 
 			return (
 				<div className="space-x-3">
 					<Link className={buttonVariants({ variant: "outline" })} target="_blank" href={`${process.env.NEXT_PUBLIC_MAIN_SITE}/projetos/${slug}`}>
 						<EyeIcon />
 					</Link>
-					<Link href={`/projetos/editar/${id}`} className={buttonVariants({variant: "informative"})}>
+					<Link href={`/projetos/editar/${slug}`} className={buttonVariants({variant: "informative"})}>
 						<PencilIcon />
 					</Link>
 					<Dialog>
@@ -101,16 +103,18 @@ export const projectColumns: ColumnDef<Project>[] = [
 							<p>Tem certeza que deseja excluir este projeto?</p>
 							<DialogFooter>
 								<DialogClose className={buttonVariants({ variant: "outline" })}>Cancelar</DialogClose>
-								<Button variant="destructive" onClick={async () => {
-									// TODO: Implementar deleteProject
-									// const { message, success } = await deleteProject(id)
-									// if (success) {
-									//   toast(message)
-									// }
-									toast("Funcionalidade em desenvolvimento")
-								}}>
-									Excluir
-								</Button>
+								<DialogClose asChild>
+									<Button variant="destructive" onClick={async () => {
+										const project = await deleteProject(id) ;
+										if(project){
+											toast.success("Projeto excluído com sucesso!")
+										} else {
+											toast.error("Erro ao excluir o projeto. Tente novamente mais tarde.");
+										}
+									}}>
+										Excluir
+									</Button>
+								</DialogClose>
 							</DialogFooter>
 						</DialogContent>
 					</Dialog>

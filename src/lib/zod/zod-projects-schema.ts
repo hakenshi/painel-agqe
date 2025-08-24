@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const createProjectSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
-  type: z.enum(["social", "educational", "environmental", "cultural", "health"]),
+  projectType: z.enum(["social", "educational", "environmental", "cultural", "health"]),
   status: z.enum(["planning", "active", "completed", "archived"]),
   responsibles: z.string().min(1, "Responsáveis são obrigatórios"),
   location: z.string().optional(),

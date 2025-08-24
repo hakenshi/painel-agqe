@@ -1,8 +1,9 @@
-'use server'
+"use server";
 
 import { apiClient } from "@/lib/api";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { getSession, saveSession } from "@/server/session";
+import { cache } from "react";
 
 interface LoginResponse {
   access_token: string;
@@ -21,46 +22,56 @@ interface LoginResponse {
   };
 }
 
-export const login = async (cpf: string, password: string): Promise<{ success: boolean; user?: User; message?: string }> => {
+export const login = async (
+  cpf: string,
+  password: string
+): Promise<{ success: boolean; user?: User; message?: string }> => {
   try {
-    const response = await apiClient.post('/login', { cpf, password }) as unknown as LoginResponse;
-    
-    const session = await getSession();
-    session.access_token = response.access_token;
-    session.user = response.user;
-    session.isLoggedIn = true;
-    await session.save();
 
-    redirect("/home");
+    const response = await apiClient.post<{ cpf: string, password: string }, LoginResponse>("/login", {
+      cpf,
+      password,
+    });
+    if (!response.access_token) {
+      console.log("Credenciais inválidas", response);
+      return {
+        success: false,
+        message: "Credenciais inválidas",
+      };
+    }
+    await saveSession(response.access_token);
+    return {
+      success: true,
+      message: "Login efetuado com sucesso.",
+    };
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Erro no login"
+      message: error instanceof Error ? error.message : "Erro no login",
     };
   }
 };
-
-export async function getAuthUser() {
+export const getAuthUser = cache(async () => {
   const session = await getSession();
-  
-  if (!session.isLoggedIn || !session.access_token) {
+
+  if (!session.token) {
     throw new Error("Token inválido ou ausente");
   }
-  
+
   try {
-    return await apiClient.get('/me');
+    return await apiClient.get<User>("/me");
   } catch {
     await logout();
     throw new Error("Token inválido ou ausente");
   }
-}
+});
 
 export async function logout() {
   const session = await getSession();
-  
+
   try {
-    if (session.access_token) {
-      await apiClient.post('/logout');
+    if (session.token) {
+      await apiClient.post("/logout");
     }
   } catch {
     // Ignora erro da API

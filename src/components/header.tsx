@@ -1,11 +1,14 @@
 import { getFileURL } from "@/lib/utils";
-import { SearchIcon } from "lucide-react";
+import { LogOutIcon, SearchIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import Icon from "./icon";
 import Link from "next/link";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { logout } from "@/actions/auth";
 
-export default async function Header() {
+
+export default function Header() {
 
     return (
         <header className="border-zinc-200 col-span-1 lg:col-span-2 row-span-1 h-fit">
@@ -17,9 +20,17 @@ export default async function Header() {
                 <div className="flex gap-2 sm:gap-5 items-center">
                     <Button className="hidden sm:flex"> <SearchIcon /> Buscar</Button>
                     <Button size="icon" className="sm:hidden"> <SearchIcon /></Button>
-                    <div>
-                        <Icon />
-                    </div>
+                    <DropdownMenu >
+                        <DropdownMenuTrigger>
+                            <Icon />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="mr-2">
+                            <DropdownMenuItem onClick={logout}>
+                                <LogOutIcon className="text-primary" />
+                                <span>Sair</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </nav>
         </header>

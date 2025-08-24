@@ -17,7 +17,7 @@ function isValidRedirect(url: string, baseUrl: string): boolean {
 }
 
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get("auth-token")
+    const token = request.cookies.get("token")
 
     if (!token) {
         const loginUrl = new URL("/login", request.url);

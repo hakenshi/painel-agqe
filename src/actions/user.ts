@@ -1,7 +1,22 @@
 "use server";
 
 import { apiClient } from "@/lib/api";
+import { createUserSchema, CreateUserValues, updateUserSchema, UpdateUserValues } from "@/lib/zod/zod-user-schema";
 import { revalidatePath } from "next/cache";
+
+function formDataToObject(userData: FormData) {
+  return {
+    firstName: userData.get('firstName') as string,
+    secondName: userData.get('secondName') as string,
+    cpf: userData.get('cpf') as string,
+    occupation: userData.get('occupation') as string,
+    color: userData.get('color') as string,
+    birthDate: userData.get('birthDate') ? new Date(userData.get('birthDate') as string) : undefined,
+    joinedAt: userData.get('joinedAt') ? new Date(userData.get('joinedAt') as string) : undefined,
+    password: userData.get('password') as string || undefined,
+    photo: userData.get('photo') as File | null,
+  };
+}
 
 export async function getAllUsers() {
   return await apiClient.get<User[]>('/users');
@@ -9,17 +24,14 @@ export async function getAllUsers() {
 
 export async function createUser(userData: FormData) {
   try {
-    const formData = {
-      firstName: userData.get('firstName') as string,
-      secondName: userData.get('secondName') as string,
-      cpf: userData.get('cpf') as string,
-      occupation: userData.get('occupation') as string,
-      color: userData.get('color') as string,
-      birthDate: userData.get('birthDate') as string,
-      joinedAt: userData.get('joinedAt') as string,
-      password: userData.get('password') as string,
-    };
-    const response = await apiClient.post<Partial<User>>('/users', formData);
+    const formData = formDataToObject(userData);
+    const parsedValues = createUserSchema.safeParse(formData);
+
+    if (!parsedValues.success) {
+      throw new Error(`Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`);
+    }
+
+    const response = await apiClient.post<CreateUserValues>('/users', parsedValues.data);
     revalidatePath("/usuarios");
     return {
       success: true,
@@ -32,17 +44,14 @@ export async function createUser(userData: FormData) {
 
 export async function updateUser(userId: number, userData: FormData) {
   try {
-    const formData = {
-      firstName: userData.get('firstName') as string,
-      secondName: userData.get('secondName') as string,
-      cpf: userData.get('cpf') as string,
-      occupation: userData.get('occupation') as string,
-      color: userData.get('color') as string,
-      birthDate: userData.get('birthDate') as string,
-      joinedAt: userData.get('joinedAt') as string,
-      password: userData.get('password') as string,
-    };
-    const response = await apiClient.put<Partial<User>>(`/users/${userId}`, formData);
+    const formData = formDataToObject(userData);
+    const parsedValues = updateUserSchema.safeParse(formData);
+
+    if (!parsedValues.success) {
+      throw new Error(`Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`);
+    }
+
+    const response = await apiClient.put<UpdateUserValues>(`/users/${userId}`, parsedValues.data);
     revalidatePath("/usuarios");
     return {
       success: true,

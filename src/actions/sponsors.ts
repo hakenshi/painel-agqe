@@ -2,6 +2,19 @@
 
 import { apiClient } from "@/lib/api";
 import { revalidatePath } from "next/cache";
+import { createSponsorSchema, updateSponsorSchema } from "@/lib/zod/zod-sponsors-schema";
+
+function formDataToObject(formData: FormData) {
+  const obj: Record<string, any> = {};
+  for (const [key, value] of formData.entries()) {
+    if (key === 'logo' && value instanceof File && value.size === 0) {
+      continue;
+    } else {
+      obj[key] = value;
+    }
+  }
+  return obj;
+}
 
 export async function getAllSponsors(): Promise<Sponsor[]> {
     return await apiClient.get('/sponsors');
@@ -9,6 +22,13 @@ export async function getAllSponsors(): Promise<Sponsor[]> {
 
 export async function createSponsor(sponsorData: FormData) {
     try {
+        const formObject = formDataToObject(sponsorData);
+        const parsedValues = createSponsorSchema.safeParse(formObject);
+        
+        if (!parsedValues.success) {
+            throw new Error(`Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`);
+        }
+        
         const response = await apiClient.post('/sponsors', sponsorData);
         revalidatePath("/apoiadores");
         return {
@@ -22,6 +42,13 @@ export async function createSponsor(sponsorData: FormData) {
 
 export async function updateSponsor(sponsorId: number, sponsorData: FormData) {
     try {
+        const formObject = formDataToObject(sponsorData);
+        const parsedValues = updateSponsorSchema.safeParse(formObject);
+        
+        if (!parsedValues.success) {
+            throw new Error(`Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`);
+        }
+        
         const response = await apiClient.put(`/sponsors/${sponsorId}`, sponsorData);
         revalidatePath("/apoiadores");
         return {

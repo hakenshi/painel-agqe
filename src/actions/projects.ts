@@ -1,6 +1,30 @@
 "use server";
 
 import { apiClient } from "@/lib/api";
+import { createProjectSchema, updateProjectSchema } from "@/lib/zod/zod-projects-schema";
+import { revalidatePath } from "next/cache";
+
+function formDataToObject(formData: FormData): Record<string, unknown> {
+  const obj: Record<string, unknown> = {};
+  for (const [key, value] of formData.entries()) {
+    if (key === 'date' && value) {
+      obj[key] = new Date(value as string);
+    } else if (key === 'cover_image' && value instanceof File && value.size === 0) {
+      continue;
+    } else {
+      obj[key] = value;
+    }
+  }
+  return obj;
+}
+
+export async function getAllProjects() {
+  try {
+    return await apiClient.get<Project[]>("/projects")
+  } catch {
+    return []
+  }
+}
 
 export async function findProject(id: string): Promise<Project | null> {
   try {
@@ -13,6 +37,18 @@ export async function findProject(id: string): Promise<Project | null> {
 
 export async function createProject(data: FormData): Promise<{ success: boolean; project?: Project; message?: string }> {
   try {
+    const formObject = formDataToObject(data);
+    const parsedValues = createProjectSchema.safeParse(formObject);
+
+    console.log(parsedValues)
+
+    if (!parsedValues.success) {
+      return {
+        success: false,
+        message: 'Dados inválidos: ' + parsedValues.error
+      };
+    }
+
     const project = await apiClient.post('/projects', data) as unknown as Project;
     return {
       success: true,
@@ -30,7 +66,19 @@ export async function createProject(data: FormData): Promise<{ success: boolean;
 
 export async function updateProject(id: string, data: FormData): Promise<{ success: boolean; project?: Project; message?: string }> {
   try {
+    const formObject = formDataToObject(data);
+    const parsedValues = updateProjectSchema.safeParse(formObject);
+    if (!parsedValues.success) {
+      return {
+        success: false,
+        message: 'Dados inválidos: ' + parsedValues.error
+      };
+    }
+
     const project = await apiClient.put(`/projects/${id}`, data) as unknown as Project;
+
+    revalidatePath('/home/projetos');
+
     return {
       success: true,
       project,
@@ -42,5 +90,16 @@ export async function updateProject(id: string, data: FormData): Promise<{ succe
       success: false,
       message: 'Falha ao atualizar projeto'
     };
+  }
+}
+
+export async function deleteProject(id: number): Promise<Project> {
+  try {
+    const project = await apiClient.delete(`/projects/${id}`) as unknown as Project;
+    revalidatePath('/projetos');
+    return project;
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    throw new Error('Falha ao excluir projeto');
   }
 }

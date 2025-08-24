@@ -2,6 +2,7 @@ import { getAuthUser } from '@/actions/auth'
 import React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { UserIcon } from 'lucide-react'
+import { getFileURL } from '@/lib/utils'
 
 export default async function Icon() {
 
@@ -9,7 +10,7 @@ export default async function Icon() {
 
     return (
         <Avatar className='size-12'>
-            <AvatarImage className='object-cover' src={(user as User)?.photo || ""} />
+            <AvatarImage className='object-cover' src={user.photo ? getFileURL(user.photo) : ""} />
             <AvatarFallback>
                 <div className='bg-zinc-300 rounded-full p-3'>
                     <UserIcon />
