@@ -49,13 +49,13 @@ export default function LoginForm({ loginFn }: LoginFormProps) {
   }
 
   return (
-    <section className="w-full max-w-md mx-4 sm:mx-10">
+    <section className="w-full max-w-xl mx-4 sm:mx-10">
       <Form {...form}>
-        <form className="bg-white rounded-xl px-6 sm:px-10 py-5 gap-5 flex flex-col items-center justify-center border-zinc-100 border-2 z-10" style={{
+        <form className="bg-white rounded-xl h-130 px-6 sm:px-10 py-5 gap-5 flex flex-col items-center justify-center border-zinc-100 border-2 z-10" style={{
           boxShadow: "0px 0px 30px rgba(0,0,0,0.25)"
         }} onSubmit={form.handleSubmit(submit)}>
           <div className="flex flex-col items-center gap-5">
-            <Image src={`${getFileURL('icons/icon-transparent.png')}`} alt="logo associação e grupo quatro estações" width={120} height={120} className="sm:w-[150px] sm:h-[150px]" />
+            <Image src={`${getFileURL('icons/icon-transparent.png')}`} alt="logo associação e grupo quatro estações" width={400} height={300} className="w-42"/>
             <h1 className="font-bold text-pink-700 text-center text-sm sm:text-base">Painel Associação e Grupo 4 estações</h1>
           </div>
           <div className="space-y-7 w-full">

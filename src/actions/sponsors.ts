@@ -4,8 +4,8 @@ import { apiClient } from "@/lib/api";
 import { revalidatePath } from "next/cache";
 import { createSponsorSchema, updateSponsorSchema } from "@/lib/zod/zod-sponsors-schema";
 
-function formDataToObject(formData: FormData) {
-  const obj: Record<string, any> = {};
+function formDataToObject(formData: FormData): Record<string, unknown> {
+  const obj: Record<string, unknown> = {};
   for (const [key, value] of formData.entries()) {
     if (key === 'logo' && value instanceof File && value.size === 0) {
       continue;

@@ -3,8 +3,8 @@
 import { apiClient } from "@/lib/api";
 import { createEventSchema } from "@/lib/zod/zod-events-schema";
 
-function formDataToObject(formData: FormData) {
-  const obj: Record<string, any> = {};
+function formDataToObject(formData: FormData): Record<string, unknown> {
+  const obj: Record<string, unknown> = {};
   
   for (const [key, value] of formData.entries()) {
     if (key === 'date' && value) {

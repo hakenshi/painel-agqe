@@ -14,7 +14,7 @@ export default function Header() {
         <header className="border-zinc-200 col-span-1 lg:col-span-2 row-span-1 h-fit">
             <nav className="py-3 mx-3 sm:mx-5 flex justify-between items-center">
                 <Link href={"/"} className="flex items-center gap-2 sm:gap-3">
-                    <Image width={500} height={500} className="sm:w-[75px] sm:h-[75px]" alt="teste" src={getFileURL("icons/icon-transparent.png")} />
+                    <Image width={500} height={500} className="w-20" alt="teste" src={getFileURL("icons/icon-transparent.png")} />
                     <span className="font-medium text-pink-600 text-sm sm:text-base">Painel AGQE</span>
                 </Link>
                 <div className="flex gap-2 sm:gap-5 items-center">

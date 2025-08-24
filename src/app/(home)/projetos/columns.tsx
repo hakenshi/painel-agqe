@@ -7,7 +7,6 @@ import { EyeIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import Link from "next/link";
-import { apiClient } from "@/lib/api";
 import { deleteProject } from "@/actions/projects";
 
 
