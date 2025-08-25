@@ -18,6 +18,7 @@ export default function Projeto({ projectData }: { projectData: Project | null }
     const [isEditing, setIsEditing] = useState(!projectData?.coverImage)
     const [markdown, setMarkdown] = useState(projectData?.markdown)
     const [currentProject, setCurrentProject] = useState<Project | null>(null)
+    const [coverImageFile, setCoverImageFile] = useState<File | null>(null)
 
     const updateProjectData = (updates: Partial<Project>) => {
         setCurrentProject((prev) => prev ? { ...prev, ...updates } : null)
@@ -38,19 +39,25 @@ export default function Projeto({ projectData }: { projectData: Project | null }
         }
 
         Object.entries(currentProject).forEach(([key, value]) => {
-            if (value != null) {
+            if (value != null && key !== 'coverImage') {
                 formData.append(key, String(value))
             }
         })
 
+        if (coverImageFile) {
+            formData.append('cover_image', coverImageFile)
+        }
+
+        formData.append('markdown', markdown || '')
+        
         try {
             let result
             if (currentProject.id) {
                 result = await updateProject(String(currentProject.id), formData)
-                console.log("updateProject result:", result)
+
             } else {
                 result = await createProject(formData)
-                console.log("createProject result:", result)
+
             }
 
             if (result.success) {
@@ -123,7 +130,10 @@ export default function Projeto({ projectData }: { projectData: Project | null }
                     <div className="lg:col-span-1 space-y-4">
                         <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                             <div className="flex items-center justify-center w-full h-96">
-                                <ImagePreview url={currentProject.coverImage} />
+                                <ImagePreview 
+                                    url={currentProject.coverImage} 
+                                    onChange={setCoverImageFile}
+                                />
                             </div>
                             {(currentProject.location || currentProject.date || currentProject.startingTime && currentProject.endingTime) && <h3 className="font-semibold text-gray-800 my-3">Detalhes</h3>}
                             <div className="space-y-3 text-sm">

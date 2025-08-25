@@ -4,16 +4,23 @@ import { PlusCircleIcon } from 'lucide-react'
 import Image from 'next/image'
 import React, { useRef, useState } from 'react'
 
-export default function ImagePreview({ url }: { url?: string }) {
+interface ImagePreviewProps {
+    url?: string
+    name?: string
+    onChange?: (file: File | null) => void
+}
+
+export default function ImagePreview({ url, name = 'cover_image', onChange }: ImagePreviewProps) {
     const fileRef = useRef<HTMLInputElement>(null)
     const [preview, setPreview] = useState<string | undefined>(url)
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0]
+        const file = e.target.files?.[0] || null
         if (file) {
             const url = URL.createObjectURL(file)
             setPreview(url)
         }
+        onChange?.(file)
     }
 
     function handleClick() {
@@ -29,9 +36,9 @@ export default function ImagePreview({ url }: { url?: string }) {
             <input
                 ref={fileRef}
                 type="file"
-                accept=".jpg, jpeg, .png"
+                accept=".jpg,.jpeg,.png"
                 className="hidden"
-                name='cover_image'
+                name={name}
                 onChange={handleFileChange}
             />
 

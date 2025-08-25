@@ -47,7 +47,7 @@ export async function createSponsor(sponsorData: FormData) {
         
         const response = await apiClient.post('/sponsors', dataToSend);
 
-        console.log("Resposta da criação do apoiador:", response);
+
 
         revalidatePath("/apoiadores");
         return {

@@ -9,6 +9,7 @@ export const createProjectSchema = z.object({
   date: z.date().optional(),
   starting_time: z.string().optional(),
   ending_time: z.string().optional(),
+  markdown: z.string().optional(),
 });
 
 export const updateProjectSchema = createProjectSchema.extend({

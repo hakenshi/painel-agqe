@@ -10,11 +10,15 @@ import Link from "next/link";
 import { deleteProject } from "@/actions/projects";
 
 
+
 export const projectColumns: ColumnDef<Project>[] = [
 	{
 		header: "",
 		accessorKey: "coverImage",
 		cell: ({ row: { original: { coverImage } } }) => {
+
+
+
 			return (
 				<TableIcon photo={coverImage} />
 			)
@@ -86,7 +90,7 @@ export const projectColumns: ColumnDef<Project>[] = [
 					<Link className={buttonVariants({ variant: "outline" })} target="_blank" href={`${process.env.NEXT_PUBLIC_MAIN_SITE}/projetos/${slug}`}>
 						<EyeIcon />
 					</Link>
-					<Link href={`/projetos/editar/${slug}`} className={buttonVariants({variant: "informative"})}>
+					<Link href={`/projetos/editar/${slug}`} className={buttonVariants({ variant: "informative" })}>
 						<PencilIcon />
 					</Link>
 					<Dialog>
@@ -104,8 +108,8 @@ export const projectColumns: ColumnDef<Project>[] = [
 								<DialogClose className={buttonVariants({ variant: "outline" })}>Cancelar</DialogClose>
 								<DialogClose asChild>
 									<Button variant="destructive" onClick={async () => {
-										const project = await deleteProject(id) ;
-										if(project){
+										const project = await deleteProject(id);
+										if (project) {
 											toast.success("Projeto excluído com sucesso!")
 										} else {
 											toast.error("Erro ao excluir o projeto. Tente novamente mais tarde.");

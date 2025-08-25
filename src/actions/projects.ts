@@ -44,19 +44,22 @@ export async function createProject(data: FormData): Promise<{ success: boolean;
     if (!parsedValues.success) {
       return {
         success: false,
-        message: 'Dados inválidos: ' + parsedValues.error
+        message: 'Dados inválidos: ' + parsedValues.error.errors.map(e => e.message).join(', ')
       };
     }
 
-    const coverImageFile = data.get('cover_image') as File;
-    const coverImageUrl = await storeFileUrl(coverImageFile, 'projects');
-    
+    const coverImageFile = data.get('cover_image') as File | null;
+    const coverImage = coverImageFile && coverImageFile.size > 0 ? await storeFileUrl(coverImageFile, 'projects') : null;
+
     const dataToSend = {
       ...parsedValues.data,
-      cover_image: coverImageUrl
+      cover_image: coverImage,
+      project_type: parsedValues.data.projectType
     };
 
     const project = await apiClient.post('/projects', dataToSend) as unknown as Project;
+    revalidatePath('/projetos');
+
     return {
       success: true,
       project,
@@ -84,7 +87,7 @@ export async function updateProject(id: string, data: FormData): Promise<{ succe
 
     const coverImageFile = data.get('cover_image') as File;
     const coverImageUrl = coverImageFile?.size > 0 ? await storeFileUrl(coverImageFile, 'projects') : undefined;
-    
+
     const dataToSend = {
       ...parsedValues.data,
       ...(coverImageUrl && { cover_image: coverImageUrl })

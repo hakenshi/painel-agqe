@@ -57,7 +57,7 @@ export async function createUser(userData: FormData) {
       photo: photoUrl as string | null
     };
 
-    const response = await apiClient.post('/users', dataToSend);
+    const response = await apiClient.post('/users', dataToSend) as User;
     revalidatePath("/usuarios");
     return {
       success: true,
@@ -89,7 +89,8 @@ export async function updateUser(userId: number, userData: FormData) {
     let photoUrl: string | undefined;
     
     if (photoFile && photoFile.size > 0) {
-      photoUrl = await storeFileUrl(photoFile, 'users');
+      const result = await storeFileUrl(photoFile, 'users');
+      photoUrl = result || undefined;
     }
     
     const dataToSend = {
@@ -97,7 +98,7 @@ export async function updateUser(userId: number, userData: FormData) {
       ...(photoUrl && { photo: photoUrl })
     };
 
-    const response = await apiClient.put(`/users/${userId}`, dataToSend);
+    const response = await apiClient.put(`/users/${userId}`, dataToSend) as User;
     revalidatePath("/usuarios");
     return {
       success: true,

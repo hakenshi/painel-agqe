@@ -2,7 +2,7 @@
 
 import { apiClient } from "@/lib/api";
 import { redirect } from "next/navigation";
-import { getSession, saveSession } from "@/server/session";
+import { destroySession, getSession, saveSession } from "@/server/session";
 import { cache } from "react";
 
 interface LoginResponse {
@@ -75,7 +75,7 @@ export async function logout() {
   } catch {
     // Ignora erro da API
   } finally {
-    session.destroy();
+    destroySession()
     redirect("/login");
   }
 }

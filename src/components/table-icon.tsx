@@ -1,7 +1,6 @@
 import React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { UserIcon } from 'lucide-react'
-import { getFileURL } from '@/lib/utils';
 
 export default function TableIcon({ photo }: { photo: string | null }) {
     return (
@@ -9,7 +8,7 @@ export default function TableIcon({ photo }: { photo: string | null }) {
             <Avatar className='size-12'>
                 <AvatarImage 
                     className='object-cover' 
-                    src={photo ? getFileURL(photo) : ""}
+                    src={photo ?? ""}
                     onError={(e) => {
                         e.currentTarget.src = '';
                     }}

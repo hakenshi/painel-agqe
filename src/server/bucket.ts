@@ -79,6 +79,9 @@ export async function updateFileInBucket(
 
 export async function storeFileUrl(file: File | null | undefined, bucketFolder: string) {
     let photoUrl: string | undefined | null = null
+
+
+
     if (file instanceof File) {
         try {
             const fileExtension = file.name.split('.').pop()
