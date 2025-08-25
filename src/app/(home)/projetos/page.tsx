@@ -6,6 +6,8 @@ import CreateProjectForm from "./form";
 import { FolderPlus } from "lucide-react";
 import { getAllProjects } from "@/actions/projects";
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProjetosPage() {
   // TODO: Implementar getAllProjects quando a action estiver pronta
   const projects: Project[] = await getAllProjects();

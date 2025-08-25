@@ -2,6 +2,7 @@
 
 import { apiClient } from "@/lib/api";
 import { createEventSchema } from "@/lib/zod/zod-events-schema";
+import { storeFileUrl } from "@/server/bucket";
 
 function formDataToObject(formData: FormData): Record<string, unknown> {
   const obj: Record<string, unknown> = {};
@@ -49,7 +50,21 @@ export async function createEvent(data: FormData): Promise<{ success: boolean; e
       };
     }
     
-    const event = await apiClient.post('/events', data) as unknown as Event;
+    const coverImageFile = data.get('cover_image') as File;
+    const coverImageUrl = await storeFileUrl(coverImageFile, 'events');
+    
+    const dataToSend = {
+      name: parsedValues.data.name,
+      eventType: parsedValues.data.type,
+      location: parsedValues.data.location,
+      date: parsedValues.data.date,
+      starting_time: parsedValues.data.starting_time,
+      ending_time: parsedValues.data.ending_time,
+      cover_image: coverImageUrl,
+      markdown: parsedValues.data.markdown
+    };
+    
+    const event = await apiClient.post('/events', dataToSend) as unknown as Event;
     return {
       success: true,
       event,

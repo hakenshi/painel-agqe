@@ -1,3 +1,8 @@
+'server-only'
+
+import { destroySession, getSession } from '@/server/session';
+import { redirect } from 'next/navigation';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export class ApiClient {
@@ -9,7 +14,6 @@ export class ApiClient {
 
   private async getAuthToken(): Promise<string | null> {
     try {
-      const { getSession } = await import('@/server/session');
       const session = await getSession();
       return session.token || null;
     } catch {
@@ -17,12 +21,19 @@ export class ApiClient {
     }
   }
 
+  private async handleTokenExpiration(): Promise<void> {
+    await destroySession();
+    redirect('/login');
+  }
+
+
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
     const token = await this.getAuthToken();
-    
+
     const config: RequestInit = {
       ...options,
       headers: {
@@ -33,9 +44,14 @@ export class ApiClient {
       },
     };
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, config);
+    const url = `${this.baseUrl}${endpoint}${endpoint.includes('?') ? '&' : '?'}_t=${Date.now()}`;
+    const response = await fetch(url, config);
 
     if (!response.ok) {
+      if (response.status === 401) {
+        await this.handleTokenExpiration();
+        throw new Error('Token expirado. Redirecionando para login...');
+      }
       const error = await response.text();
       throw new Error(`API Error: ${response.status} - ${error}`);
     }

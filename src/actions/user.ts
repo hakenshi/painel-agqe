@@ -1,19 +1,33 @@
 "use server";
 
 import { apiClient } from "@/lib/api";
-import { createUserSchema, CreateUserValues, updateUserSchema, UpdateUserValues } from "@/lib/zod/zod-user-schema";
+import { createUserSchema, updateUserSchema } from "@/lib/zod/zod-user-schema";
 import { revalidatePath } from "next/cache";
+import { storeFileUrl } from "@/server/bucket";
 
 function formDataToObject(userData: FormData) {
+  const birthDateStr = userData.get('birthDate')?.toString();
+  const joinedAtStr = userData.get('joinedAt')?.toString();
+  
+  let birthDate: Date | undefined;
+  let joinedAt: Date | undefined;
+  
+  try {
+    birthDate = birthDateStr ? new Date(birthDateStr) : undefined;
+    joinedAt = joinedAtStr ? new Date(joinedAtStr) : undefined;
+  } catch {
+    // Invalid dates will remain undefined
+  }
+  
   return {
-    firstName: userData.get('firstName') as string,
-    secondName: userData.get('secondName') as string,
-    cpf: userData.get('cpf') as string,
-    occupation: userData.get('occupation') as string,
-    color: userData.get('color') as string,
-    birthDate: userData.get('birthDate') ? new Date(userData.get('birthDate') as string) : undefined,
-    joinedAt: userData.get('joinedAt') ? new Date(userData.get('joinedAt') as string) : undefined,
-    password: userData.get('password') as string || undefined,
+    firstName: userData.get('firstName')?.toString() || '',
+    secondName: userData.get('secondName')?.toString() || '',
+    cpf: userData.get('cpf')?.toString() || '',
+    occupation: userData.get('occupation')?.toString() || '',
+    color: userData.get('color')?.toString() || 'pink',
+    birthDate,
+    joinedAt,
+    password: userData.get('password')?.toString() || undefined,
     photo: userData.get('photo') as File | null,
   };
 }
@@ -28,17 +42,33 @@ export async function createUser(userData: FormData) {
     const parsedValues = createUserSchema.safeParse(formData);
 
     if (!parsedValues.success) {
-      throw new Error(`Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`);
+      return {
+        success: false,
+        userData: null,
+        message: `Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`
+      };
     }
 
-    const response = await apiClient.post<CreateUserValues, User>('/users', parsedValues.data);
+    const photoFile = userData.get('photo') as File | null;
+    const photoUrl = photoFile && photoFile.size > 0 ? await storeFileUrl(photoFile, 'users') : null;
+    
+    const dataToSend = {
+      ...parsedValues.data,
+      photo: photoUrl as string | null
+    };
+
+    const response = await apiClient.post('/users', dataToSend);
     revalidatePath("/usuarios");
     return {
       success: true,
       userData: response.firstName + ' ' + response.secondName,
     };
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : "Erro ao criar usuário");
+    return {
+      success: false,
+      userData: null,
+      message: error instanceof Error ? error.message : "Erro ao criar usuário"
+    };
   }
 }
 
@@ -48,27 +78,47 @@ export async function updateUser(userId: number, userData: FormData) {
     const parsedValues = updateUserSchema.safeParse(formData);
 
     if (!parsedValues.success) {
-      throw new Error(`Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`);
+      return {
+        success: false,
+        userData: null,
+        message: `Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`
+      };
     }
 
-    const response = await apiClient.put<UpdateUserValues, User>(`/users/${userId}`, parsedValues.data);
+    const photoFile = userData.get('photo') as File | null;
+    let photoUrl: string | undefined;
+    
+    if (photoFile && photoFile.size > 0) {
+      photoUrl = await storeFileUrl(photoFile, 'users');
+    }
+    
+    const dataToSend = {
+      ...parsedValues.data,
+      ...(photoUrl && { photo: photoUrl })
+    };
+
+    const response = await apiClient.put(`/users/${userId}`, dataToSend);
     revalidatePath("/usuarios");
     return {
       success: true,
       userData: response.firstName + ' ' + response.secondName,
     };
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : "Erro ao atualizar usuário");
+    return {
+      success: false,
+      userData: null,
+      message: error instanceof Error ? error.message : "Erro ao atualizar usuário"
+    };
   }
 }
 
 export async function deleteUser(userId: number) {
   try {
-    const response = await apiClient.delete(`/users/${userId}`) as User;
+    await apiClient.delete(`/users/${userId}`);
     revalidatePath("/usuarios");
     return {
       success: true,
-      userData: response.firstName + ' ' + response.secondName,
+      userData: null,
     };
   } catch (error) {
     return {

@@ -33,7 +33,6 @@ export const login = async (
       password,
     });
     if (!response.access_token) {
-      console.log("Credenciais inválidas", response);
       return {
         success: false,
         message: "Credenciais inválidas",

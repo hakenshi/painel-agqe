@@ -4,7 +4,7 @@ import { updateUser } from "@/actions/user"
 import InputCPF from "@/components/input-cpf"
 import DatePicker from "@/components/date-picker"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -12,17 +12,23 @@ import { UpdateUserValues, colors, updateUserSchema } from "@/lib/zod/zod-user-s
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Pencil } from "lucide-react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { useState } from "react"
+
+const SANITIZE_REGEX = /[<>"'&]/g;
 
 export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: number }) {
+    const [isLoading, setIsLoading] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const form = useForm<UpdateUserValues>({
         resolver: zodResolver(updateUserSchema),
         defaultValues: {
             color: (data?.color as "pink") ?? "pink",
-            firstName: data?.firstName?.replace(/[<>"'&]/g, '') ?? "",
-            secondName: data?.secondName?.replace(/[<>"'&]/g, '') ?? "",
+            firstName: data?.firstName?.replace(SANITIZE_REGEX, '') ?? "",
+            secondName: data?.secondName?.replace(SANITIZE_REGEX, '') ?? "",
             cpf: data?.cpf ?? "",
-            occupation: data?.occupation?.replace(/[<>"'&]/g, '') ?? "",
+            occupation: data?.occupation?.replace(SANITIZE_REGEX, '') ?? "",
             birthDate: data?.birthDate ? new Date(data.birthDate) : undefined,
             joinedAt: data?.joinedAt ? new Date(data.joinedAt) : undefined,
         },
@@ -30,18 +36,32 @@ export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: 
     })
 
     async function onSubmit(formData: UpdateUserValues) {
-        const data = new FormData()
-        Object.entries(formData).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                data.append(key, value instanceof Date ? value.toISOString() : String(value))
+        try {
+            setIsLoading(true);
+            const data = new FormData();
+            Object.entries(formData).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    data.append(key, value instanceof Date ? value.toISOString() : String(value));
+                }
+            });
+            
+            const result = await updateUser(id, data);
+            if (result.success) {
+                toast.success(`Usuário ${result.userData} atualizado com sucesso!`);
+                setOpen(false);
+            } else {
+                toast.error(result.message || "Erro ao atualizar usuário");
             }
-        })
-        await updateUser(id, data)
+        } catch {
+            toast.error("Erro inesperado ao atualizar usuário");
+        } finally {
+            setIsLoading(false);
+        }
     }
 
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" size="icon">
                     <Pencil className="h-4 w-4" />
@@ -64,7 +84,7 @@ export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: 
                                         <Input 
                                             placeholder="Insira um nome" 
                                             {...field}
-                                            onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
+                                            onChange={(e) => field.onChange(e.target.value.replace(SANITIZE_REGEX, ''))}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -82,7 +102,7 @@ export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: 
                                         <Input 
                                             placeholder="Insira um sobrenome" 
                                             {...field}
-                                            onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
+                                            onChange={(e) => field.onChange(e.target.value.replace(SANITIZE_REGEX, ''))}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -166,7 +186,7 @@ export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: 
                                         <Input 
                                             placeholder="Insira uma ocupação" 
                                             {...field}
-                                            onChange={(e) => field.onChange(e.target.value.replace(/[<>"'&]/g, ''))}
+                                            onChange={(e) => field.onChange(e.target.value.replace(SANITIZE_REGEX, ''))}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -200,11 +220,9 @@ export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: 
                                 <DatePicker field={field} label='Data de Admissão' />
                             )}
                         />
-                        <DialogClose asChild>
-                            <Button className="w-full" type="submit">
-                                Atualizar
-                            </Button>
-                        </DialogClose>
+                        <Button className="w-full" type="submit" disabled={isLoading}>
+                            {isLoading ? "Atualizando..." : "Atualizar"}
+                        </Button>
                     </form>
                 </Form>
             </DialogContent>

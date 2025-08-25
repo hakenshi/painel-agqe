@@ -3,6 +3,7 @@
 import { apiClient } from "@/lib/api";
 import { createProjectSchema, updateProjectSchema } from "@/lib/zod/zod-projects-schema";
 import { revalidatePath } from "next/cache";
+import { storeFileUrl } from "@/server/bucket";
 
 function formDataToObject(formData: FormData): Record<string, unknown> {
   const obj: Record<string, unknown> = {};
@@ -40,8 +41,6 @@ export async function createProject(data: FormData): Promise<{ success: boolean;
     const formObject = formDataToObject(data);
     const parsedValues = createProjectSchema.safeParse(formObject);
 
-    console.log(parsedValues)
-
     if (!parsedValues.success) {
       return {
         success: false,
@@ -49,7 +48,15 @@ export async function createProject(data: FormData): Promise<{ success: boolean;
       };
     }
 
-    const project = await apiClient.post('/projects', data) as unknown as Project;
+    const coverImageFile = data.get('cover_image') as File;
+    const coverImageUrl = await storeFileUrl(coverImageFile, 'projects');
+    
+    const dataToSend = {
+      ...parsedValues.data,
+      cover_image: coverImageUrl
+    };
+
+    const project = await apiClient.post('/projects', dataToSend) as unknown as Project;
     return {
       success: true,
       project,
@@ -75,7 +82,15 @@ export async function updateProject(id: string, data: FormData): Promise<{ succe
       };
     }
 
-    const project = await apiClient.put(`/projects/${id}`, data) as unknown as Project;
+    const coverImageFile = data.get('cover_image') as File;
+    const coverImageUrl = coverImageFile?.size > 0 ? await storeFileUrl(coverImageFile, 'projects') : undefined;
+    
+    const dataToSend = {
+      ...parsedValues.data,
+      ...(coverImageUrl && { cover_image: coverImageUrl })
+    };
+
+    const project = await apiClient.put(`/projects/${id}`, dataToSend) as unknown as Project;
 
     revalidatePath('/home/projetos');
 

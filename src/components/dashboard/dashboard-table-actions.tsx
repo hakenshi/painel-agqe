@@ -38,7 +38,8 @@ export default function DashboardTableActions({ deleteFn, updateForm, id }: Dash
                         <Button
                             variant="destructive"
                             onClick={async () => {
-                                await deleteFn(id)
+                                await deleteFn(id);
+                                setIsDeleteOpen(false);
                             }}
                         >
                             Excluir

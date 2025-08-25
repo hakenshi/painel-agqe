@@ -3,12 +3,15 @@
 import { apiClient } from "@/lib/api";
 import { revalidatePath } from "next/cache";
 import { createSponsorSchema, updateSponsorSchema } from "@/lib/zod/zod-sponsors-schema";
+import { storeFileUrl } from "@/server/bucket";
 
 function formDataToObject(formData: FormData): Record<string, unknown> {
   const obj: Record<string, unknown> = {};
   for (const [key, value] of formData.entries()) {
     if (key === 'logo' && value instanceof File && value.size === 0) {
       continue;
+    } else if (key === 'sponsoringSince' && typeof value === 'string') {
+      obj[key] = new Date(value);
     } else {
       obj[key] = value;
     }
@@ -24,19 +27,39 @@ export async function createSponsor(sponsorData: FormData) {
     try {
         const formObject = formDataToObject(sponsorData);
         const parsedValues = createSponsorSchema.safeParse(formObject);
-        
         if (!parsedValues.success) {
-            throw new Error(`Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`);
+            return {
+                success: false,
+                sponsor: null,
+                message: `Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`
+            };
         }
         
-        const response = await apiClient.post('/sponsors', sponsorData);
+        const logoFile = sponsorData.get('logo') as File;
+        const logoUrl = await storeFileUrl(logoFile, 'sponsors');
+        
+        const dataToSend = {
+            name: parsedValues.data.name,
+            website: parsedValues.data.website,
+            logo: logoUrl,
+            sponsoringSince: parsedValues.data.sponsoringSince
+        };
+        
+        const response = await apiClient.post('/sponsors', dataToSend);
+
+        console.log("Resposta da criação do apoiador:", response);
+
         revalidatePath("/apoiadores");
         return {
             success: true,
             sponsor: response,
         };
     } catch (error) {
-        throw new Error(error instanceof Error ? error.message : "Erro ao criar apoiador");
+        return {
+            success: false,
+            sponsor: null,
+            message: error instanceof Error ? error.message : "Erro ao criar apoiador"
+        };
     }
 }
 
@@ -46,17 +69,25 @@ export async function updateSponsor(sponsorId: number, sponsorData: FormData) {
         const parsedValues = updateSponsorSchema.safeParse(formObject);
         
         if (!parsedValues.success) {
-            throw new Error(`Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`);
+            return {
+                success: false,
+                sponsor: null,
+                message: `Dados inválidos: ${parsedValues.error.errors.map(e => e.message).join(', ')}`
+            };
         }
         
-        const response = await apiClient.put(`/sponsors/${sponsorId}`, sponsorData);
+        const response = await apiClient.put(`/sponsors/${sponsorId}`, parsedValues.data);
         revalidatePath("/apoiadores");
         return {
             success: true,
             sponsor: response,
         };
     } catch (error) {
-        throw new Error(error instanceof Error ? error.message : "Erro ao atualizar apoiador");
+        return {
+            success: false,
+            sponsor: null,
+            message: error instanceof Error ? error.message : "Erro ao atualizar apoiador"
+        };
     }
 }
 

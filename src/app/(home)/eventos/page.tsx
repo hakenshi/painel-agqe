@@ -6,6 +6,8 @@ import { eventColumns } from "./columns";
 import CreateEventForm from "./form";
 import { CalendarPlus } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function EventosPage() {
 
   const events = await getAllEvents();

@@ -6,6 +6,8 @@ import { UserPlusIcon } from "lucide-react";
 import { userColumns } from "./columns";
 import CreateUserForm from "./create-form";
 
+export const dynamic = 'force-dynamic';
+
 export default async function UsuariosPage() {
 
   const users = await getAllUsers()

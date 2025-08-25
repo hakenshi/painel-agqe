@@ -1,9 +1,13 @@
 'use client'
 
-// import { deleteSponsor } from "@/actions/sponsors"; // Descomente quando a action existir
+import { deleteSponsor } from "@/actions/sponsors";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ColumnDef } from "@tanstack/react-table";
 import { ImageIcon } from "lucide-react";
+import DashboardTableActions from "@/components/dashboard/dashboard-table-actions";
+import UpdateSponsorForm from "./update-form";
+import { toast } from "sonner";
+import { getFileURL } from "@/lib/utils";
 
 export const sponsorColumns: ColumnDef<Sponsor>[] = [
     {
@@ -12,7 +16,7 @@ export const sponsorColumns: ColumnDef<Sponsor>[] = [
         cell: ({ row }) => (
             <div className="flex justify-center items-center">
                 <Avatar className='size-12'>
-                    <AvatarImage className='object-contain p-1' src={row.original.logo} alt={row.original.name} />
+                    <AvatarImage className='object-contain p-1' src={getFileURL(row.original.logo)} alt={row.original.name} />
                     <AvatarFallback>
                         <div className='bg-zinc-300 rounded-full p-3'>
                             <ImageIcon />
@@ -42,7 +46,7 @@ export const sponsorColumns: ColumnDef<Sponsor>[] = [
         header: "Última atualização",
         accessorKey: "updatedAt",
         cell: ({ row }) =>
-             new Intl.DateTimeFormat('pt-BR', {
+            new Intl.DateTimeFormat('pt-BR', {
                 dateStyle: "short",
                 timeStyle: "short"
             }).format(new Date(row.original.updatedAt))
@@ -51,21 +55,23 @@ export const sponsorColumns: ColumnDef<Sponsor>[] = [
     {
         header: "",
         accessorKey: "actions",
-        // cell: ({ _ }) => {
-            // const { id } = row.original;
+        cell: ({ row }) => {
+            const { id } = row.original;
 
-            // return (
-                // "xd"
-                // <DashboardTableActions
-                //     updateForm={<UpdateSponsorForm sponsor={row.original} />} // Corrigido: passando a prop 'sponsor'
-                //     id={id}
-                //     deleteFn={async () => { 
-                //         // await deleteSponsor(id); // Implemente e descomente
-                //         console.log("Delete function for sponsor ID:", id);
-                //         // toast.info("Funcionalidade de deletar apoiador ainda não implementada.") // Removido toast daqui
-                //     }}
-                // />
-            // );
+            return (
+                <DashboardTableActions
+                    updateForm={<UpdateSponsorForm sponsor={row.original} />}
+                    id={id}
+                    deleteFn={async () => {
+                        try {
+                            await deleteSponsor(id);
+                            toast.success("Apoiador excluído com sucesso!");
+                        } catch {
+                            toast.error("Erro ao excluir apoiador");
+                        }
+                    }}
+                />
+            );
         }
-    // }
+    }
 ];

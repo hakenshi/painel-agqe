@@ -5,11 +5,13 @@ import { imageFileSchema, textSchema, urlSchema } from "./shared";
 const nameField = textSchema(1, 255).refine(v => v.length > 0, "O nome do apoiador é obrigatório.");
 const logoField = imageFileSchema;
 const websiteField = urlSchema.max(255);
+const sponsoringSinceField = z.date().optional();
 
 // Base schema with all required fields
 const baseSponsorSchema = z.object({
   name: nameField,
   website: websiteField,
+  sponsoringSince: sponsoringSinceField,
 });
 
 // Create schema - all fields required, logo required
