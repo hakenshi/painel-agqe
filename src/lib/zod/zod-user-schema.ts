@@ -46,7 +46,7 @@ export const createUserSchema = baseUserSchema.extend({
 // Update schema - all fields optional except dates, password optional
 export const updateUserSchema = baseUserSchema.partial().extend({
     password: passwordField.optional().nullable(),
-    photo: photoField.optional().nullable(),
+    photo: z.union([photoField, z.null(), z.undefined()]).optional(),
     birthDate: dateField.optional(),
     joinedAt: dateField.optional(),
 });

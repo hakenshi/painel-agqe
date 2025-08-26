@@ -53,7 +53,14 @@ export async function createUser(userData: FormData) {
     const photoUrl = photoFile && photoFile.size > 0 ? await storeFileUrl(photoFile, 'users') : null;
     
     const dataToSend = {
-      ...parsedValues.data,
+      first_name: parsedValues.data.firstName,
+      second_name: parsedValues.data.secondName,
+      cpf: parsedValues.data.cpf,
+      occupation: parsedValues.data.occupation,
+      color: parsedValues.data.color,
+      birth_date: parsedValues.data.birthDate.toISOString().split('T')[0],
+      joined_at: parsedValues.data.joinedAt.toISOString().split('T')[0],
+      password: parsedValues.data.password,
       photo: photoUrl as string | null
     };
 
@@ -94,11 +101,19 @@ export async function updateUser(userId: number, userData: FormData) {
     }
     
     const dataToSend = {
-      ...parsedValues.data,
+      first_name: parsedValues.data.firstName,
+      second_name: parsedValues.data.secondName,
+      cpf: parsedValues.data.cpf,
+      occupation: parsedValues.data.occupation,
+      color: parsedValues.data.color,
+      birth_date: parsedValues.data.birthDate?.toISOString().split('T')[0],
+      joined_at: parsedValues.data.joinedAt?.toISOString().split('T')[0],
+      ...(parsedValues.data.password && { password: parsedValues.data.password }),
       ...(photoUrl && { photo: photoUrl })
     };
 
     const response = await apiClient.put(`/users/${userId}`, dataToSend) as User;
+    
     revalidatePath("/usuarios");
     return {
       success: true,

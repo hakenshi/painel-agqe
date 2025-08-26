@@ -41,7 +41,13 @@ export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: 
             const data = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
                 if (value !== undefined && value !== null) {
-                    data.append(key, value instanceof Date ? value.toISOString() : String(value));
+                    if (key === 'photo' && value instanceof File) {
+                        data.append(key, value);
+                    } else if (value instanceof Date) {
+                        data.append(key, value.toISOString());
+                    } else if (key !== 'photo') {
+                        data.append(key, String(value));
+                    }
                 }
             });
             
@@ -136,11 +142,8 @@ export default function UpdateUserForm({ data, id }: { data: Partial<User>, id: 
                                             accept="image/*"
                                             onChange={(e) => {
                                                 const file = e.target.files?.[0]
-                                                if (file) {
-                                                    field.onChange(file)
-                                                }
+                                                field.onChange(file || null)
                                             }}
-
                                         />
                                     </FormControl>
                                     <FormMessage />
