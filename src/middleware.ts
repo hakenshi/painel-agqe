@@ -26,7 +26,7 @@ export function middleware(request: NextRequest) {
         }
     }
 
-    if (request.nextUrl.pathname === "/" && token) {
+    if (request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/eventos" && token) {
         const homeUrl = new URL("/home", request.url);
         if (isValidRedirect(homeUrl.toString(), request.url)) {
             return NextResponse.redirect(homeUrl);
