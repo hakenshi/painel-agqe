@@ -37,9 +37,9 @@ const baseUserSchema = z.object({
     joinedAt: dateField,
 });
 
-// Create schema - all fields required, password required, photo optional
+// Create schema - all fields required, password optional, photo optional
 export const createUserSchema = baseUserSchema.extend({
-    password: passwordField,
+    password: passwordField.optional().nullable(),
     photo: photoField.optional().nullable(),
 });
 

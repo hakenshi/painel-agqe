@@ -27,6 +27,12 @@ export const login = async (
   password: string
 ): Promise<{ success: boolean; user?: User; message?: string }> => {
   try {
+    if (!password || password.trim() === '') {
+      return {
+        success: false,
+        message: "Senha é obrigatória para acessar o sistema",
+      };
+    }
 
     const response = await apiClient.post<{ cpf: string, password: string }, LoginResponse>("/login", {
       cpf,
@@ -35,7 +41,7 @@ export const login = async (
     if (!response.access_token) {
       return {
         success: false,
-        message: "Credenciais inválidas",
+        message: "Credenciais inválidas ou usuário sem senha cadastrada",
       };
     }
     await saveSession(response.access_token);
@@ -46,7 +52,7 @@ export const login = async (
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Erro no login",
+      message: error instanceof Error ? error.message : "Credenciais inválidas ou usuário sem senha cadastrada",
     };
   }
 };

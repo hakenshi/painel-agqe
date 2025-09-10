@@ -31,5 +31,6 @@ export async function saveSession(token: string) {
 
 export async function destroySession() {
     const session = await getSession()
-    await session.destroy()
+    session.token = ''
+    await session.save()
 }

@@ -11,9 +11,14 @@ export const userColumns: ColumnDef<User>[] = [
     {
         header: "Foto",
         accessorKey: 'photo',
-        cell: ({ row: { original: { photo } } }) => (
-            <TableIcon photo={photo ?? null} />
-        )
+        cell: ({ row: { original: { photo } } }) => {
+
+            console.log(photo)
+
+            return (
+                <TableIcon photo={photo ?? null} />
+            )
+        }
     },
     {
         header: 'Nome',
